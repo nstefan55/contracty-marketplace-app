@@ -30,4 +30,4 @@ const reviewSchema = new Schema(
 
 reviewSchema.index({ user: 1, contractor: 1 }, { unique: true }); //! One Review per Contractor and User
 
-export default model.Review || model("Review", reviewSchema);
+export default models.Review || model("Review", reviewSchema);
