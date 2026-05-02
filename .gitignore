@@ -44,4 +44,8 @@ next-env.d.ts
 .claude
 CLAUDE.md
 AGENTS.md
+.vscode
+.claude
+claude.md
+agents.md
 
