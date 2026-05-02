@@ -3,7 +3,7 @@ import ContractorSearchForm from "./ContractorSearchForm";
 
 const HeroSection = () => {
   return (
-    <section className="w-full border-b border-slate-200 bg-white text-black p-4">
+    <section className="w-full border border-slate-500 bg-white text-black p-4">
       <h1 className="text-5xl text-center text-[#071426] font-extrabold capitalize mt-8">
         Find your trusted local contractor
       </h1>

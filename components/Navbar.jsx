@@ -4,7 +4,7 @@ import Image from "next/image";
 const Navbar = () => {
   return (
     <nav className="w-full border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+      <div className="container max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/images/logo/contracty-logo.png"

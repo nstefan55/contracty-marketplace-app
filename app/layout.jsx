@@ -1,5 +1,7 @@
 import { Noto_Sans, Raleway, Source_Sans_3 } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import "./globals.css";
 
 export const metadata = {
@@ -30,7 +32,9 @@ export default function RootLayout({ children }) {
         className={`${notoSans.className} ${raleway.className} ${sourceSans3.className}`}
       >
         <body>
+          <Navbar />
           <main>{children}</main>
+          <Footer />
         </body>
       </html>
     </AuthProvider>

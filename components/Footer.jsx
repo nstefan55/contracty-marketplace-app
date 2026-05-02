@@ -4,8 +4,8 @@ import Link from "next/link";
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-    <footer className="w-full border-b border-slate-200 bg-white py-4">
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4">
+    <footer className="w-full  border-b border-slate-200 bg-white py-4">
+      <div className="container max-w-8xl mx-auto flex flex-col md:flex-row items-center justify-between px-4">
         <div className="mb-4 md:mb-0">
           <Link href="/" className="flex items-center gap-2">
             <Image
