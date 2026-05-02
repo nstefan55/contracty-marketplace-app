@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { ScanSearch } from "lucide-react";
+
 const CONTRACTOR_TYPES = [
   "All",
   "General Contractor",
@@ -43,15 +45,18 @@ const PropertySearchForm = () => {
       onSubmit={handleSubmit}
       className=" mx-auto max-w-2xl w-full flex flex-col mt-5"
     >
-      <div className="flex flex-col md:flex-row items-center gap-2">
-        <label htmlFor="location" className="sr-only">
-          Location
+      <div className="flex flex-col md:flex-row items-center gap-2 relative">
+        <label htmlFor="name" className="sr-only">
+          Name
         </label>
+        <div>
+          <ScanSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        </div>
         <input
           type="text"
-          id="location"
+          id="name"
           placeholder="Search by Trade or Name"
-          className="w-full px-4 py-3 rounded-lg bg-[#071525] text-white placeholder:text-white focus:outline-none focus:ring focus:ring-orange-500"
+          className="w-full pl-8 px-4 py-3 rounded-lg bg-[#071525] text-white placeholder:text-white focus:outline-none focus:ring focus:ring-orange-500"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />

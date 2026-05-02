@@ -1,14 +1,5 @@
 import { Schema, model, models } from "mongoose";
 
-const portfolioItemSchema = new Schema({
-  title: String,
-  description: String,
-  images: [String],
-  projectType: String,
-  location: String,
-  completedAt: Date,
-});
-
 const contractorSchema = new Schema(
   {
     owner: {
@@ -21,18 +12,20 @@ const contractorSchema = new Schema(
     trade: {
       type: String,
       enum: [
-        "electrician",
-        "plumber",
-        "roofer",
-        "carpenter",
-        "general-contractor",
-        "hvac",
-        "painter",
-        "landscaper",
-        "mason",
-        "tiler",
-        "glazier",
-        "structural-engineer",
+        "General Contractor",
+        "Electrician",
+        "Plumber",
+        "HVAC Technician",
+        "Handyman",
+        "Roofer",
+        "Landscaper",
+        "Mason",
+        "Carpenter",
+        "Concrete & Paving",
+        "Painter",
+        "Tiler",
+        "Flooring Specialist",
+        "Window & Door Specialist",
       ],
       required: true,
     },
@@ -42,24 +35,15 @@ const contractorSchema = new Schema(
     serviceArea: {
       lat: Number,
       lng: Number,
-      radiusKm: {
-        type: Number,
-        default: 20,
-      },
+      radiusKm: { type: Number, default: 20 },
       address: String,
       postcode: String,
     },
-    portfolio: [portfolioItemSchema],
     certifications: [String],
     priceRange: {
-      hourlyMax: Number,
-      hourlyMin: Number,
-      projectMin: Number,
-      projectMax: Number,
-      currency: {
-        type: String,
-        default: "EUR",
-      },
+      hourly: { min: Number, max: Number },
+      project: { min: Number, max: Number },
+      currency: { type: String, default: "EUR" },
     },
     yearsExperience: Number,
     available: { type: Boolean, default: true },
@@ -71,5 +55,7 @@ const contractorSchema = new Schema(
   },
   { timestamps: true },
 );
+
+contractorSchema.index({ trade: 1, available: 1 });
 
 export default models.Contractor || model("Contractor", contractorSchema);
