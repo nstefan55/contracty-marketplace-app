@@ -1,5 +1,8 @@
 import { Schema, model, models } from "mongoose";
 
+const DEFAULT_PROFILE_IMAGE_URL =
+  "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
+
 const userSchema = new Schema(
   {
     name: String,
@@ -9,6 +12,10 @@ const userSchema = new Schema(
       required: true,
     },
     image: String,
+    profileImage: {
+      type: String,
+      default: DEFAULT_PROFILE_IMAGE_URL,
+    },
     role: {
       type: String,
       enum: ["client", "contractor", "admin"],

@@ -1,5 +1,6 @@
 import connectDB from "@/config/database";
 import Contractor from "@/models/Contractor";
+import Portfolio from "@/models/Portfolio";
 
 import FeaturedContractorCard from "./FeaturedContractorCard";
 
@@ -9,6 +10,24 @@ const FeaturedContractors = async () => {
   const contractors = await Contractor.find({
     featured: true,
   }).lean();
+
+  // Get all contractor IDs
+  const contractorIds = contractors.map((c) => c._id);
+
+  // Fetch portfolios for these contractors
+  const portfolios = await Portfolio.find({
+    contractor: { $in: contractorIds },
+  }).lean();
+
+  // Create a map of contractor ID to their portfolios
+  const portfolioMap = portfolios.reduce((acc, portfolio) => {
+    const contractorId = portfolio.contractor.toString();
+    if (!acc[contractorId]) {
+      acc[contractorId] = [];
+    }
+    acc[contractorId].push(portfolio);
+    return acc;
+  }, {});
 
   return contractors.length > 0 ? (
     <section className="bg-white px-4 py-6 pb-10">
@@ -21,6 +40,9 @@ const FeaturedContractors = async () => {
             <FeaturedContractorCard
               key={contractor._id}
               contractor={contractor}
+              profileImages={
+                portfolioMap[contractor._id.toString()]?.[0]?.images || []
+              }
             />
           ))}
         </div>

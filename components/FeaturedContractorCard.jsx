@@ -1,24 +1,31 @@
 import Link from "next/link";
 
-const FeaturedContractorCard = ({ contractor }) => {
+import StarRating from "@/components/lib/StarRating";
+
+const FeaturedContractorCard = async ({ contractor, profileImages }) => {
   const {
     _id,
     name,
     trade,
-    rating,
+    averageRating,
     reviewCount,
-    rateMin,
-    rateMax,
     profileImage,
+    priceRange,
   } = contractor;
+
+  const hourlyMin = priceRange?.hourly?.min;
+  const hourlyMax = priceRange?.hourly?.max;
+
+  const projectMin = priceRange?.project?.min;
+  const projectMax = priceRange?.project?.max;
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border bg-white ">
-      {/* Photo */}
+      {/* Portfolio Photo */}
       <div className="h-44 w-full bg-slate-200">
-        {profileImage && (
+        {profileImages?.length > 0 && (
           <img
-            src={profileImage}
+            src={profileImages[0]}
             alt={name}
             className="h-full w-full object-cover"
           />
@@ -27,9 +34,22 @@ const FeaturedContractorCard = ({ contractor }) => {
 
       {/* Content */}
       <div className="flex flex-col gap-2 p-5">
-        {/* Avatar + Name / Trade */}
         <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 shrink-0 rounded-full bg-slate-300" />
+          {/* Avatar */}
+          <div className="h-12 w-12 shrink-0 rounded-full bg-slate-300">
+            {profileImage && (
+              <Link
+                href={`/contractors/${_id}`}
+                className="h-full w-full rounded-full"
+              >
+                <img
+                  src={profileImage}
+                  alt={name}
+                  className="h-full w-full rounded-full object-cover"
+                />
+              </Link>
+            )}
+          </div>
           <div className="flex flex-col">
             <span className="text-base font-bold text-slate-800">{name}</span>
             <span className="text-xs text-slate-500">{trade}</span>
@@ -38,15 +58,26 @@ const FeaturedContractorCard = ({ contractor }) => {
 
         {/* Stars + review count */}
         <div className="flex items-center gap-1.5">
-          <span className="text-sm text-amber-400">★★★★★</span>
-          <span className="text-xs text-slate-500">
-            {rating} ({reviewCount} reviews)
+          <span className="text-xs text-slate-500 flex items-center align-middle">
+            <StarRating averageRating={averageRating} />{" "}
+            <span className="ms-2 me-1 text-xs text-slate-500">
+              {averageRating}
+            </span>{" "}
+            ({reviewCount} reviews)
           </span>
         </div>
 
         {/* Rate */}
         <span className="text-sm font-semibold text-slate-700">
-          £{rateMin} – £{rateMax} / hour
+          {hourlyMin && hourlyMax ? (
+            <>
+              €{hourlyMin} – €{hourlyMax} / hour
+            </>
+          ) : (
+            <>
+              €{projectMin} – €{projectMax} / project
+            </>
+          )}
         </span>
 
         {/* Button */}

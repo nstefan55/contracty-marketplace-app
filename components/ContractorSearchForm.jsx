@@ -43,26 +43,26 @@ const PropertySearchForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className=" mx-auto max-w-2xl w-full flex flex-col mt-5"
+      className="mx-auto mt-5 flex w-full max-w-2xl flex-col"
     >
-      <div className="flex flex-col md:flex-row items-center gap-2 relative">
+      <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
         <label htmlFor="name" className="sr-only">
           Name
         </label>
-        <div>
-          <ScanSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+        <div className="relative flex-1">
+          <ScanSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:h-5 sm:w-5" />
+          <input
+            type="text"
+            id="name"
+            placeholder="Search by Trade or Name"
+            className="w-full rounded-lg bg-[#071525] py-3 pl-10 pr-4 text-white placeholder:text-white focus:outline-none focus:ring focus:ring-orange-500 sm:pl-11"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
-        <input
-          type="text"
-          id="name"
-          placeholder="Search by Trade or Name"
-          className="w-full pl-8 px-4 py-3 rounded-lg bg-[#071525] text-white placeholder:text-white focus:outline-none focus:ring focus:ring-orange-500"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
         <button
           type="submit"
-          className="w-full md:w-auto px-6 py-3 rounded-lg bg-orange-500 text-white hover:bg-orange-600 focus:outline-none focus:ring focus:ring-slate-700 whitespace-nowrap"
+          className="w-full whitespace-nowrap rounded-lg bg-orange-500 px-6 py-3 text-white hover:bg-orange-600 focus:outline-none focus:ring focus:ring-slate-700 md:w-auto"
         >
           Search
         </button>

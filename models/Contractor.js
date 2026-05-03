@@ -9,6 +9,11 @@ const contractorSchema = new Schema(
     },
     name: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
+    profileImage: {
+      type: String,
+      default:
+        "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
+    },
     trade: {
       type: String,
       enum: [
