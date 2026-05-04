@@ -24,11 +24,13 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
       {/* Portfolio Photo */}
       <div className="h-44 w-full bg-slate-200">
         {profileImages?.length > 0 && (
-          <img
-            src={profileImages[0]}
-            alt={name}
-            className="h-full w-full object-cover"
-          />
+          <Link href={`/contractors/${_id}`}>
+            <img
+              src={profileImages[0]}
+              alt={name}
+              className="h-full w-full object-cover"
+            />
+          </Link>
         )}
       </div>
 

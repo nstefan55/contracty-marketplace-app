@@ -1,4 +1,6 @@
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcryptjs from "bcryptjs";
 
 import connectDB from "@/config/database";
 
@@ -9,6 +11,42 @@ const DEFAULT_PROFILE_IMAGE_URL =
 
 export const authOptions = {
   providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "your@email.com" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Email and password required");
+        }
+
+        await connectDB();
+
+        const user = await User.findOne({ email: credentials.email });
+
+        if (!user || !user.password) {
+          throw new Error("Invalid email or password");
+        }
+
+        const isPasswordValid = await bcryptjs.compare(
+          credentials.password,
+          user.password,
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Invalid email or password");
+        }
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          image: user.profileImage || user.image || DEFAULT_PROFILE_IMAGE_URL,
+        };
+      },
+    }),
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,

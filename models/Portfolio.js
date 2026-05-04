@@ -13,9 +13,7 @@ const portfolioSchema = new Schema(
     description: {
       type: String,
     },
-
     images: [String],
-
     projectType: { type: String },
 
     location: {

@@ -30,7 +30,7 @@ const FeaturedContractors = async () => {
   }, {});
 
   return contractors.length > 0 ? (
-    <section className="bg-white px-4 py-6 pb-10">
+    <section className="bg-white px-4 py-4 pb-8">
       <div className="w-full container-xl lg:container m-auto">
         <h2 className="text-3xl font-extrabold text-[#071525] text-center my-4 ">
           Featured This Week
