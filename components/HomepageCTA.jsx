@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const HomepageCTA = () => {
   return (
-    <section className="bg-[#1E293B] py-16 px-12">
+    <section className="bg-[#1E293B] py-24 px-12">
       <div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-5">
         <h2 className="text-4xl font-bold text-white text-center">
           Ready to find your contractor?
@@ -16,8 +16,8 @@ const HomepageCTA = () => {
         </Link>
 
         <p className="text-[#94A3B8] text-sm align-middle">
-          Or{" "}
-          //TODO - Change the link to the contractor registration page once it's implemented
+          Or //TODO - Change the link to the contractor registration page once
+          it's implemented
           <Link
             href="/register?role=contractor"
             className="underline hover:text-white transition-colors"
