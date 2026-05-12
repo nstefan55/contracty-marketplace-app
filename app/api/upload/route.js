@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/authOptions";
+import { authOptions } from "@/utils/auth";
 import cloudinary from "@/config/cloudinary";
 
 export async function POST(request) {

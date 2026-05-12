@@ -1,5 +1,3 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
 import FeaturedContractors from "@/components/FeaturedContractors";
 import SimpleProcessSteps from "@/components/SimpleProcessSteps";
