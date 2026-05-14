@@ -1,9 +1,8 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/auth";
 import cloudinary from "@/config/cloudinary";
+import { auth } from "@/app/auth";
 
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }

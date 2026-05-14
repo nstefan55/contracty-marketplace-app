@@ -12,14 +12,42 @@ const userSchema = new Schema(
       unique: true,
       required: true,
     },
-    profileImage: {
+    image: {
       type: String,
       default: DEFAULT_PROFILE_IMAGE_URL,
     },
+    password: {
+      type: String,
+      default: null,
+    },
     role: {
       type: String,
-      enum: ["client", "contractor", "admin"],
-      default: "client",
+      enum: ["homeowner", "contractor", "admin", null],
+      default: null,
+    },
+    emailVerified: {
+      type: Date,
+      default: null,
+    },
+    needsOnboarding: {
+      type: Boolean,
+      default: false,
+    },
+    otp: {
+      type: String,
+      default: null,
+    },
+    otpExpiry: {
+      type: Date,
+      default: null,
+    },
+    signInToken: {
+      type: String,
+      default: null,
+    },
+    signInTokenExpiry: {
+      type: Date,
+      default: null,
     },
     bookmarks: [
       {
@@ -27,10 +55,6 @@ const userSchema = new Schema(
         ref: "Contractor",
       },
     ],
-    password: {
-      type: String,
-      default: null,
-    },
   },
   { timestamps: true },
 );

@@ -1,22 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import AuthGoogle from "@/components/AuthGoogle";
-import { signIn } from "@/utils/auth";
+import { credentialsSignIn } from "@/app/actions/credentialsSignIn";
 
 const SignInPage = () => {
-  async function credentialsSignIn(formData) {
-    "use server";
-    await signIn("credentials", {
-      email: formData.get("email"),
-      password: formData.get("password"),
-      redirectTo: "/",
-    });
-  }
-
   return (
     <section className="min-h-screen bg-background-light flex items-center justify-center px-4">
       <div className="w-full max-w-110 bg-white rounded-2xl p-10 flex flex-col gap-6">
-
         <div className="flex justify-center">
           <Image
             src="/images/logo/contracty-logo.png"
@@ -34,6 +24,7 @@ const SignInPage = () => {
           Welcome back. Sign in to find trusted local contractors.
         </p>
 
+        {/* // Google Sign-In */}
         <AuthGoogle />
 
         <div className="flex items-center gap-4">
@@ -44,7 +35,10 @@ const SignInPage = () => {
 
         <form action={credentialsSignIn} className="flex flex-col gap-6">
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="email" className="text-[13px] font-semibold text-mid-text">
+            <label
+              htmlFor="email"
+              className="text-[13px] font-semibold text-mid-text"
+            >
               Email
             </label>
             <input
@@ -58,7 +52,10 @@ const SignInPage = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="password" className="text-[13px] font-semibold text-mid-text">
+            <label
+              htmlFor="password"
+              className="text-[13px] font-semibold text-mid-text"
+            >
               Password
             </label>
             <input
@@ -81,7 +78,10 @@ const SignInPage = () => {
 
         <p className="text-[13px] text-gray-text text-center">
           Don&apos;t have an account?{" "}
-          <Link href="/signup" className="font-semibold text-dark-text hover:underline">
+          <Link
+            href="/signup"
+            className="font-semibold text-dark-text hover:underline"
+          >
             Sign up
           </Link>
         </p>
@@ -89,7 +89,6 @@ const SignInPage = () => {
         <p className="text-[11px] text-[#94a3b8] text-center">
           We never store your password
         </p>
-
       </div>
     </section>
   );
