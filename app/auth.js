@@ -1,11 +1,15 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcryptjs from "bcryptjs";
 
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { authConfig } from "@/auth.config";
+
+import { ZodError } from "zod";
+import { signInSchema } from "@/lib/zod";
+
+import { verifyPassword } from "@/lib/password";
 
 const DEFAULT_IMAGE =
   "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
@@ -59,8 +63,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           };
         }
 
+        // Validate shape before hitting the DB
+        let email, password;
+        try {
+          ({ email, password } = await signInSchema.parseAsync(credentials));
+        } catch (error) {
+          if (error instanceof ZodError) {
+            throw new Error(error.errors.map((e) => e.message).join(", "));
+          }
+          throw error;
+        }
+
         // Normal password sign-in
-        const user = await User.findOne({ email: credentials.email });
+        const user = await User.findOne({ email });
 
         if (!user || !user.password) {
           throw new Error("Invalid email or password");
@@ -72,10 +87,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
         }
 
-        const isValid = await bcryptjs.compare(
-          credentials.password,
-          user.password,
-        );
+        const isValid = await verifyPassword(password, user.password);
 
         if (!isValid) throw new Error("Invalid email or password");
 

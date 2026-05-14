@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import bcryptjs from "bcryptjs";
-
 import connectDB from "@/config/database";
 import User from "@/models/User";
+import { saltAndHashPassword } from "@/lib/password";
 
 export async function POST(request) {
   const { name, email, password } = await request.json();
@@ -32,7 +31,7 @@ export async function POST(request) {
     );
   }
 
-  const hashedPassword = await bcryptjs.hash(password, 10);
+  const hashedPassword = await saltAndHashPassword(password);
 
   await User.create({
     name: name?.trim() || email.split("@")[0],

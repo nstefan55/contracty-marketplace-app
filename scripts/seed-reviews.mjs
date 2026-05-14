@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcryptjs from "bcryptjs";
+import { saltAndHashPassword } from "../lib/password.js";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
@@ -91,8 +91,7 @@ async function main() {
 
     for (const userData of TEST_USERS) {
       // Generate salt and hash password
-      const salt = await bcryptjs.genSalt(10); // 10 rounds for security
-      const hashedPassword = await bcryptjs.hash(userData.password, salt);
+      const hashedPassword = await saltAndHashPassword(userData.password);
 
       const user = await User.create({
         name: userData.name,
