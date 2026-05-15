@@ -7,6 +7,17 @@ export async function signInWithGoogle() {
   await signIn("google");
 }
 
+export async function signInWithOTP(email, signInToken) {
+  try {
+    await signIn("credentials", { email, signInToken, redirect: false });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return { error: "Sign-in failed. Please try again." };
+    }
+    throw error;
+  }
+}
+
 export async function signInWithToken(email, signInToken) {
   try {
     await signIn("credentials", {

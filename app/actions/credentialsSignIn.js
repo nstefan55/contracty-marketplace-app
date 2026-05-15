@@ -1,10 +1,20 @@
 "use server";
 
-import { signInWithToken } from "@/app/actions/auth-actions";
+import { signIn } from "@/app/auth";
+import { AuthError } from "next-auth";
 
-export async function credentialsSignIn(formData) {
+export async function credentialsSignIn(prevState, formData) {
   const email = formData.get("email");
   const password = formData.get("password");
-  const signInToken = signInWithToken(email, password);
-  return signInToken;
+  try {
+    await signIn("credentials", { email, password, redirectTo: "/" });
+  } catch (error) {
+    if (error?.message === "NEXT_REDIRECT") throw error;
+    if (error instanceof AuthError) {
+      return {
+        message: error.cause?.err?.message || "Invalid email or password.",
+      };
+    }
+    throw error;
+  }
 }

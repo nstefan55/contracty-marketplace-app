@@ -5,10 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AuthGoogle from "@/components/AuthGoogle";
+import { MoonLoaderSpinner } from "@/components/lib/Spinner";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -75,9 +78,11 @@ export default function SignUpPage() {
               id="name"
               type="text"
               placeholder="Jane Smith"
+              required
+              maxLength={100}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="h-11 rounded-lg border border-border px-4 text-[14px] text-dark-text placeholder:text-[#94a3b8] outline-none focus:border-dark-text transition-colors"
+              className="w-full h-11 rounded-lg border border-border px-4 text-[14px] text-dark-text placeholder:text-[#94a3b8] outline-none focus:border-dark-text transition-colors"
             />
           </div>
 
@@ -93,9 +98,10 @@ export default function SignUpPage() {
               type="email"
               placeholder="you@example.com"
               required
+              maxLength={254}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="h-11 rounded-lg border border-border px-4 text-[14px] text-dark-text placeholder:text-[#94a3b8] outline-none focus:border-dark-text transition-colors"
+              className="w-full h-11 rounded-lg border border-border px-4 text-[14px] text-dark-text placeholder:text-[#94a3b8] outline-none focus:border-dark-text transition-colors"
             />
           </div>
 
@@ -106,16 +112,27 @@ export default function SignUpPage() {
             >
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Min. 8 characters"
-              required
-              minLength={8}
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="h-11 rounded-lg border border-border px-4 text-[14px] text-dark-text placeholder:text-[#94a3b8] outline-none focus:border-dark-text transition-colors"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Min. 8 characters"
+                required
+                minLength={8}
+                maxLength={128}
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className="w-full h-11 rounded-lg border border-border px-4 text-[14px] text-dark-text placeholder:text-[#94a3b8] outline-none focus:border-dark-text transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-dark-text transition-colors"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -127,7 +144,14 @@ export default function SignUpPage() {
             disabled={loading}
             className="h-12 w-full bg-dark-text text-white text-[15px] font-semibold rounded-lg hover:bg-dark-text/90 transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
-            {loading ? "Creating account…" : "Create account"}
+            {loading ? (
+              <div className="flex items-center justify-center">
+                Creating Account...
+                <MoonLoaderSpinner loading={true} size={30} className="ml-2" />
+              </div>
+            ) : (
+              "Create account"
+            )}
           </button>
         </form>
 

@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "seed:users": "node scripts/seed-users.mjs",
-    "seed:reviews": "node scripts/seed-reviews.mjs"
+    "seed:reviews": "node scripts/seed-reviews.mjs",
+    "email:dev": "email dev"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.11.2",
     "axios": "^1.16.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
@@ -22,8 +24,10 @@
     "next-flex-rating": "^1.0.4",
     "react": "19.2.6",
     "react-dom": "19.2.6",
+    "react-email": "6.1.4",
     "react-hook-form": "^7.75.0",
     "react-hot-toast": "^2.6.0",
+    "react-spinners": "^0.17.0",
     "resend": "^6.12.3",
     "zod": "^4.4.3"
   },
@@ -31,6 +35,7 @@
     "postcss": ">=8.5.10"
   },
   "devDependencies": {
+    "@react-email/ui": "6.1.4",
     "@tailwindcss/postcss": "^4.3.0",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^10.3.0",

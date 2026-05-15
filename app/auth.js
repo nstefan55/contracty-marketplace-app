@@ -11,11 +11,14 @@ import { signInSchema } from "@/lib/zod";
 
 import { verifyPassword } from "@/lib/password";
 
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+
 const DEFAULT_IMAGE =
   "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
+  adapters: MongoDBAdapter(connectDB),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
