@@ -66,7 +66,7 @@ const SignInPage = () => {
 
   return (
     <section className="min-h-screen bg-background-light flex items-center justify-center px-4">
-      <div className="w-full max-w-110 bg-white rounded-2xl p-10 flex flex-col gap-6">
+      <div className="w-full max-w-110 md:max-w-xl bg-white rounded-2xl p-10 md:p-14 flex flex-col gap-6">
         <div className="flex justify-center">
           <Image
             src="/images/logo/contracty-logo.png"

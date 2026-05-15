@@ -18,11 +18,14 @@ export default auth((req) => {
   }
 
   // Cookie written server-side by /api/onboarding/set-role after a Google
-  // user picks their role. Acts as an immediate bypass for the stale JWT
-  // since next-auth beta doesn't reliably update the session cookie via update().
+  // user picks their role. Acts as a bypass while the JWT is still stale.
+  // Only consumed once the JWT itself reflects needsOnboarding: false so
+  // it survives multiple requests until update() has propagated.
   if (req.cookies.get("onboarding_done")?.value) {
     const res = NextResponse.next();
-    res.cookies.delete("onboarding_done");
+    if (!session?.user?.needsOnboarding) {
+      res.cookies.delete("onboarding_done");
+    }
     return res;
   }
 

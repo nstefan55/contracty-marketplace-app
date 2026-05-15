@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 
 const content = {
@@ -21,19 +21,21 @@ const content = {
 export default function WelcomePage() {
   const { data: session, update } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  useEffect(() => {
-    // Refresh session in the background so the JWT reflects the new role
-    // for future server-component reads. The middleware bypass is handled
-    // by the onboarding_done cookie set in /api/onboarding/set-role.
-    update();
-  }, []);
-
-  function handleGetStarted() {
-    router.push("/");
+  async function handleGetStarted() {
+    await update();
+    router.refresh();
+    if (session?.user?.role === "contractor") {
+      router.push("/profile");
+    } else if (session?.user?.role === "homeowner") {
+      router.push("/contractors");
+    } else {
+      router.push("/");
+    }
   }
 
-  const role = session?.user?.role;
+  const role = searchParams.get("role") || session?.user?.role;
   const copy = content[role] ?? content.homeowner;
 
   return (

@@ -4,7 +4,7 @@ import { signIn } from "@/app/auth";
 import { AuthError } from "next-auth";
 
 export async function signInWithGoogle() {
-  await signIn("google");
+  await signIn("google", { redirectTo: "/" });
 }
 
 export async function signInWithOTP(email, signInToken) {

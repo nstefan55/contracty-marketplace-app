@@ -153,6 +153,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
 
+      // Self-heal stale JWT while onboarding is pending: update() in auth.js v5
+      // beta doesn't reliably rewrite the cookie, so re-read from DB until the
+      // token reflects the completed onboarding state.
+      if (token.id && token.needsOnboarding) {
+        await connectDB();
+        const dbUser = await User.findById(token.id).lean();
+        if (dbUser) {
+          token.role = dbUser.role ?? null;
+          token.needsOnboarding = dbUser.needsOnboarding ?? false;
+        }
+      }
+
       return token;
     },
 

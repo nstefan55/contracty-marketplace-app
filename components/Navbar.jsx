@@ -58,11 +58,11 @@ const Navbar = () => {
             Home
           </Link>
           <Link
-            href="/browse"
+            href="/contractors"
             className="rounded-md px-1 py-2 text-sm font-medium text-slate-700 transition hover:text-orange-500"
             onClick={() => setIsMenuOpen(false)}
           >
-            Browse
+            Find Contractors
           </Link>
           {session && session.user.role === "contractor" && (
             <Link

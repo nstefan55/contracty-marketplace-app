@@ -76,8 +76,7 @@ export default function RoleSelectionPage() {
     if (data.requiresOTP) {
       router.push("/onboarding/verify");
     } else {
-      // Google user — redirect to welcome (session update happens there)
-      router.push("/onboarding/welcome");
+      router.push(`/onboarding/welcome?role=${selected}`);
     }
   }
 
