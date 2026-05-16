@@ -54,10 +54,7 @@ export default async function DashboardPage({ params }) {
       />
 
       {/* Recent Messages */}
-      <RecentMessages
-        inquiries={recentInquiries}
-        contractorId={contractor._id}
-      />
+      <RecentMessages recentInquiries={recentInquiries} />
 
       {/* Quick Actions Component*/}
       <QuickActions slug={slug} />

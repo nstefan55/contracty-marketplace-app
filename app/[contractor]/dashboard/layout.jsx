@@ -29,8 +29,8 @@ export default async function DashboardLayout({ children, params }) {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <DashboardSidebar slug={slug} unreadCount={unreadCount} />
-      <div className="flex flex-1 flex-col min-w-0">
-        <main className="flex-1 p-8">{children}</main>
+      <div className="flex flex-1 flex-col min-w-0 pt-20 lg:pt-0">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
