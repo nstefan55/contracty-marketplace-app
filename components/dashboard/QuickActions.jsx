@@ -12,11 +12,11 @@ const QuickActions = ({ slug }) => {
           href={`/${slug}/dashboard/edit-profile`}
           className="flex items-center gap-4 px-6 py-5 hover:bg-orange-50 transition-colors group"
         >
-          <div className="shrink-0 rounded-xl bg-orange-100 p-3">
-            <UserPen size={18} className="text-orange-600" />
+          <div className="shrink-0 rounded-xl bg-[#FF6900] p-3">
+            <UserPen size={18} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-800 group-hover:text-orange-700 transition-colors">
+            <p className="text-sm font-semibold text-slate-800 group-hover:text-[#FF6900] transition-colors">
               Edit Profile
             </p>
             <p className="text-xs text-slate-400 mt-0.5">

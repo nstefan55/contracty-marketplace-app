@@ -10,9 +10,9 @@ import { signOut } from "next-auth/react";
 const Navbar = () => {
   const { data: session } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileImage = session?.user?.image;
+  const contractorSlug = session?.user?.contractorSlug;
 
   return (
     <nav className="w-full border-b border-slate-200 bg-white">
@@ -146,17 +146,21 @@ const Navbar = () => {
                     aria-labelledby="user-menu-button"
                     tabIndex="-1"
                   >
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700"
-                      role="menuitem"
-                      tabIndex="-1"
-                      id="user-menu-item-0"
-                      onClick={() => setIsProfileMenuOpen(false)}
-                    >
-                      Your Profile
-                    </Link>
-                    <Link
+                    {session.user.role === "contractor" && (
+                      <Link
+                        href={
+                          contractorSlug ? `/${contractorSlug}` : "/dashboard"
+                        }
+                        className="block px-4 py-2 text-sm text-gray-700"
+                        role="menuitem"
+                        tabIndex="-1"
+                        id="user-menu-item-0"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        Your Profile
+                      </Link>
+                    )}
+                    {/* <Link
                       href="/projects/saved"
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
@@ -165,7 +169,7 @@ const Navbar = () => {
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
                       Saved Projects
-                    </Link>
+                    </Link> */}
                     <button
                       className="block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                       role="menuitem"

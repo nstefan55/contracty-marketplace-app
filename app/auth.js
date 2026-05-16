@@ -186,6 +186,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.needsOnboarding = token.needsOnboarding;
+      session.user.contractorSlug = token.contractorSlug ?? null;
       return session;
     },
   },

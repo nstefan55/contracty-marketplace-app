@@ -16,8 +16,7 @@ const HomepageCTA = () => {
         </Link>
 
         <p className="text-[#94A3B8] text-sm align-middle">
-          Or //TODO - Change the link to the contractor registration page once
-          it's implemented
+          Or //TODO - Change the link to the contractor registration page
           <Link
             href="/register?role=contractor"
             className="underline hover:text-white transition-colors"
