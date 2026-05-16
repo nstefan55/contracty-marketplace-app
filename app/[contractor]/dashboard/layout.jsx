@@ -1,11 +1,9 @@
 import { auth } from "@/app/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import connectDB from "@/config/database";
 import Contractor from "@/models/Contractor";
 import Inquiry from "@/models/Inquiry";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const metadata = { title: "Contractor Dashboard" };
 

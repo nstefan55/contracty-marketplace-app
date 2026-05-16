@@ -5,7 +5,15 @@ import connectDB from "@/config/database";
 import Contractor from "@/models/Contractor";
 import Inquiry from "@/models/Inquiry";
 import User from "@/models/User";
-import { Eye, MessageSquare, Bookmark, Star, UserPen, Images, ExternalLink } from "lucide-react";
+import {
+  Eye,
+  MessageSquare,
+  Bookmark,
+  Star,
+  UserPen,
+  Images,
+  ExternalLink,
+} from "lucide-react";
 
 const STATUS_STYLES = {
   new: "bg-orange-100 text-orange-700 border-orange-200",
@@ -38,30 +46,34 @@ export default async function DashboardPage({ params }) {
       label: "Profile Views",
       value: contractor.viewCount ?? 0,
       icon: Eye,
-      iconBg: "bg-blue-50",
-      iconColor: "text-blue-500",
+      iconBg: "bg-[#071427]",
+      iconColor: "text-white",
     },
     {
       label: "Inquiries",
       value: inquiryCount,
       icon: MessageSquare,
-      iconBg: "bg-orange-50",
-      iconColor: "text-orange-500",
+      iconBg: "bg-[#FF6900]",
+      iconColor: "text-white",
     },
     {
       label: "Bookmarks",
       value: bookmarkCount,
       icon: Bookmark,
-      iconBg: "bg-purple-50",
-      iconColor: "text-purple-500",
+      iconBg: "bg-[#071427]",
+      iconColor: "text-white",
     },
     {
       label: "Avg Rating",
-      value: contractor.averageRating ? contractor.averageRating.toFixed(1) : "—",
+      value: contractor.averageRating
+        ? contractor.averageRating.toFixed(1)
+        : "—",
       icon: Star,
-      iconBg: "bg-amber-50",
-      iconColor: "text-amber-500",
-      sub: contractor.reviewCount ? `${contractor.reviewCount} reviews` : "No reviews yet",
+      iconBg: "bg-[#FF6900]",
+      iconColor: "text-white",
+      sub: contractor.reviewCount
+        ? `${contractor.reviewCount} reviews`
+        : "No reviews yet",
     },
   ];
 
@@ -87,7 +99,9 @@ export default async function DashboardPage({ params }) {
             <div className={`inline-flex rounded-lg p-2 mb-3 ${iconBg}`}>
               <Icon size={16} className={iconColor} />
             </div>
-            <p className="text-2xl font-bold text-slate-900 leading-none">{value}</p>
+            <p className="text-2xl font-bold text-slate-900 leading-none">
+              {value}
+            </p>
             <p className="text-xs font-medium text-slate-500 mt-1">{label}</p>
             {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
           </div>
@@ -97,7 +111,9 @@ export default async function DashboardPage({ params }) {
       {/* Recent Messages */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-800">Recent Messages</h2>
+          <h2 className="text-sm font-semibold text-slate-800">
+            Recent Messages
+          </h2>
           <Link
             href="/messages"
             className="text-xs font-medium text-orange-600 hover:text-orange-700 transition-colors"
@@ -121,9 +137,14 @@ export default async function DashboardPage({ params }) {
                 month: "short",
               });
               return (
-                <li key={id} className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors">
+                <li
+                  key={id}
+                  className="flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors"
+                >
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-slate-800">{senderName}</p>
+                    <p className="text-sm font-semibold text-slate-800">
+                      {senderName}
+                    </p>
                     <p className="text-xs text-slate-400 truncate max-w-sm mt-0.5">
                       {inq.projectType} · {inq.description.slice(0, 70)}…
                     </p>
@@ -148,7 +169,9 @@ export default async function DashboardPage({ params }) {
       {/* Quick Actions */}
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-100">
-          <h2 className="text-sm font-semibold text-slate-800">Quick Actions</h2>
+          <h2 className="text-sm font-semibold text-slate-800">
+            Quick Actions
+          </h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
           <Link
@@ -162,7 +185,9 @@ export default async function DashboardPage({ params }) {
               <p className="text-sm font-semibold text-slate-800 group-hover:text-orange-700 transition-colors">
                 Edit Profile
               </p>
-              <p className="text-xs text-slate-400 mt-0.5">Update your info &amp; trade</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Update your info &amp; trade
+              </p>
             </div>
           </Link>
 
@@ -177,7 +202,9 @@ export default async function DashboardPage({ params }) {
               <p className="text-sm font-semibold text-slate-800 group-hover:text-slate-900 transition-colors">
                 Upload Portfolio
               </p>
-              <p className="text-xs text-slate-400 mt-0.5">Showcase completed projects</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Showcase completed projects
+              </p>
             </div>
           </Link>
 
@@ -193,7 +220,9 @@ export default async function DashboardPage({ params }) {
               <p className="text-sm font-semibold text-slate-800 group-hover:text-slate-900 transition-colors">
                 Public Profile
               </p>
-              <p className="text-xs text-slate-400 mt-0.5">See how clients see you</p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                See how clients see you
+              </p>
             </div>
           </Link>
         </div>
