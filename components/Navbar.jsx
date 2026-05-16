@@ -13,7 +13,6 @@ const Navbar = () => {
 
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const profileImage = session?.user?.image;
-  const profileDefault = "/images/profile/default-profile.png";
 
   return (
     <nav className="w-full border-b border-slate-200 bg-white">
@@ -168,7 +167,7 @@ const Navbar = () => {
                       Saved Projects
                     </Link>
                     <button
-                      className="block px-4 py-2 text-sm text-gray-700"
+                      className="block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                       role="menuitem"
                       tabIndex="-1"
                       id="user-menu-item-2"

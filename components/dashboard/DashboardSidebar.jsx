@@ -14,9 +14,10 @@ import {
   SquareArrowRightExit,
   LogOut,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
-import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 const navItems = (slug) => [
   { label: "Dashboard", href: `/${slug}/dashboard`, icon: LayoutDashboard },
@@ -35,10 +36,9 @@ const navItems = (slug) => [
   },
   {
     label: "Logout",
-    href: "/api/auth/signout",
+    href: "/",
     icon: LogOut,
-    redirect: true,
-    redirectTo: "/",
+    onClick: () => signOut({ callbackUrl: "/" }),
   },
 ];
 
@@ -53,23 +53,44 @@ export default function DashboardSidebar({ slug, unreadCount = 0 }) {
 
   const navLinks = (
     <nav className="flex flex-col gap-1 p-3 flex-1">
-      {navItems(slug).map(({ label, href, icon: Icon }) => {
+      {navItems(slug).map(({ label, href, icon: Icon, onClick }) => {
         const active =
           href === `/${slug}/dashboard`
             ? pathname === href
             : href !== "/" && pathname.startsWith(href);
+
+        const commonClass = cn(
+          "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+          active
+            ? "bg-orange-50 text-orange-700"
+            : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+        );
+
+        if (onClick) {
+          return (
+            <button
+              key={label}
+              onClick={() => {
+                setOpen(false);
+                onClick();
+              }}
+              className={commonClass}
+            >
+              <Icon
+                size={17}
+                className={active ? "text-orange-500" : "text-slate-400"}
+              />
+              <span>{label}</span>
+            </button>
+          );
+        }
 
         return (
           <Link
             key={href}
             href={href}
             onClick={() => setOpen(false)}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-              active
-                ? "bg-orange-50 text-orange-700"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-            )}
+            className={commonClass}
           >
             <Icon
               size={17}
