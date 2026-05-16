@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   UserPen,
@@ -11,8 +11,12 @@ import {
   Settings,
   Menu,
   X,
+  SquareArrowRightExit,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import { useSession } from "next-auth/react";
 
 const navItems = (slug) => [
   { label: "Dashboard", href: `/${slug}/dashboard`, icon: LayoutDashboard },
@@ -24,11 +28,28 @@ const navItems = (slug) => [
   { label: "My Portfolio", href: `/${slug}/dashboard/portfolio`, icon: Images },
   { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "Settings", href: `/${slug}/dashboard/settings`, icon: Settings },
+  {
+    label: "Exit Dashboard",
+    href: "/",
+    icon: SquareArrowRightExit,
+  },
+  {
+    label: "Logout",
+    href: "/api/auth/signout",
+    icon: LogOut,
+    redirect: true,
+    redirectTo: "/",
+  },
 ];
 
 export default function DashboardSidebar({ slug, unreadCount = 0 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  const { data: session } = useSession();
+  const profilePicture = session?.user?.image;
+
+  const currentYear = new Date().getFullYear();
 
   const navLinks = (
     <nav className="flex flex-col gap-1 p-3 flex-1">
@@ -36,7 +57,7 @@ export default function DashboardSidebar({ slug, unreadCount = 0 }) {
         const active =
           href === `/${slug}/dashboard`
             ? pathname === href
-            : pathname.startsWith(href);
+            : href !== "/" && pathname.startsWith(href);
 
         return (
           <Link
@@ -105,6 +126,13 @@ export default function DashboardSidebar({ slug, unreadCount = 0 }) {
         )}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+          <Image
+            src={profilePicture}
+            alt="Profile Picture"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
             Contractor Hub
           </p>
@@ -117,6 +145,16 @@ export default function DashboardSidebar({ slug, unreadCount = 0 }) {
           </button>
         </div>
         {navLinks}
+        <div className="flex justify-center items-center gap-4  text-center px-4 py-6 mt-auto border-t border-slate-200">
+          <Image
+            src="/images/logo/contracty-logo.png"
+            alt="Contracty Logo"
+            width={90}
+            height={90}
+            className="pl-4 pb-4"
+          />
+          <p className="text-sm text-black">&copy; {currentYear} Contracty.</p>
+        </div>
       </aside>
     </>
   );
