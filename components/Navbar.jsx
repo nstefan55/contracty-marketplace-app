@@ -50,13 +50,15 @@ const Navbar = () => {
             isMenuOpen ? "flex" : "hidden md:flex"
           }`}
         >
-          <Link
-            href="/"
-            className="rounded-md px-1 py-2 text-sm font-medium text-slate-700 transition hover:text-orange-500"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Home
-          </Link>
+          {session && session.user.role === "homeowner" && (
+            <Link
+              href="/"
+              className="rounded-md px-1 py-2 text-sm font-medium text-slate-700 transition hover:text-orange-500"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+          )}
           <Link
             href="/contractors"
             className="rounded-md px-1 py-2 text-sm font-medium text-slate-700 transition hover:text-orange-500"
@@ -66,11 +68,11 @@ const Navbar = () => {
           </Link>
           {session && session.user.role === "contractor" && (
             <Link
-              href="/portfolio"
+              href="/dashboard"
               className="rounded-md px-1 py-2 text-sm font-medium text-slate-700 transition hover:text-orange-500"
               onClick={() => setIsMenuOpen(false)}
             >
-              My Portfolio
+              Dashboard
             </Link>
           )}
           {/* <!-- Right Side Menu (Logged Out) --> */}

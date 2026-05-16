@@ -17,6 +17,23 @@ export default auth((req) => {
     return NextResponse.next();
   }
 
+  // Protect contractor dashboard: /{slug}/dashboard*
+  if (/^\/[^/]+\/dashboard/.test(pathname)) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/signin", req.url));
+    }
+    if (session.user.role !== "contractor") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
+
+  // Protect messages: requires auth, any role
+  if (pathname.startsWith("/messages")) {
+    if (!session) {
+      return NextResponse.redirect(new URL("/signin", req.url));
+    }
+  }
+
   // Cookie written server-side by /api/onboarding/set-role after a Google
   // user picks their role. Acts as a bypass while the JWT is still stale.
   // Only consumed once the JWT itself reflects needsOnboarding: false so

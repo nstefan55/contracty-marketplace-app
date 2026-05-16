@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
+import { setupContractorProfile } from "@/app/actions/contractor-actions";
 
 const content = {
   homeowner: {
@@ -24,11 +24,13 @@ export default function WelcomePage() {
   const searchParams = useSearchParams();
 
   async function handleGetStarted() {
-    await update();
-    router.refresh();
-    if (session?.user?.role === "contractor") {
-      router.push("/profile");
-    } else if (session?.user?.role === "homeowner") {
+    const updated = await update();
+    const role = updated?.user?.role ?? session?.user?.role;
+    if (role === "contractor") {
+      const { slug } = await setupContractorProfile();
+      await update(); // refresh JWT so contractorSlug is available in session
+      router.push(`/${slug}/dashboard`);
+    } else if (role === "homeowner") {
       router.push("/contractors");
     } else {
       router.push("/");

@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 import connectDB from "@/config/database";
 import User from "@/models/User";
+import Contractor from "@/models/Contractor";
 import { authConfig } from "@/auth.config";
 
 import { ZodError } from "zod";
@@ -133,6 +134,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           token.id = dbUser._id.toString();
           token.role = dbUser.role ?? null;
           token.needsOnboarding = dbUser.needsOnboarding ?? false;
+          if (dbUser.role === "contractor") {
+            const c = await Contractor.findOne({ owner: dbUser._id }).lean();
+            token.contractorSlug = c?.slug ?? null;
+          }
         }
       }
 
@@ -141,6 +146,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.role = user.role ?? null;
         token.needsOnboarding = user.needsOnboarding ?? false;
+        if (user.role === "contractor") {
+          await connectDB();
+          const c = await Contractor.findOne({ owner: user.id }).lean();
+          token.contractorSlug = c?.slug ?? null;
+        }
       }
 
       // Refresh after session.update() is called client-side (e.g. welcome page).
@@ -150,6 +160,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (dbUser) {
           token.role = dbUser.role ?? null;
           token.needsOnboarding = dbUser.needsOnboarding ?? false;
+          if (dbUser.role === "contractor") {
+            const c = await Contractor.findOne({ owner: token.id }).lean();
+            token.contractorSlug = c?.slug ?? null;
+          }
         }
       }
 

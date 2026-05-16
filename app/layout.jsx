@@ -1,9 +1,12 @@
-import { Noto_Sans, Raleway, Source_Sans_3 } from "next/font/google";
+import { Noto_Sans, Raleway, Source_Sans_3, Geist } from "next/font/google";
 import AuthProvider from "@/components/AuthProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { auth } from "@/app/auth";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata = {
   title: "Contracty - Find Local Contractors",
@@ -31,7 +34,7 @@ export default async function RootLayout({ children }) {
     <AuthProvider session={session}>
       <html
         lang="en"
-        className={`${notoSans.className} ${raleway.className} ${sourceSans3.className}`}
+        className={cn(notoSans.className, raleway.className, sourceSans3.className, "font-sans", geist.variable)}
       >
         <body>
           <Navbar />
