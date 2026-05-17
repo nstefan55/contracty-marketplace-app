@@ -157,7 +157,7 @@ const Navbar = () => {
                         id="user-menu-item-0"
                         onClick={() => setIsProfileMenuOpen(false)}
                       >
-                        Your Profile
+                        View Public Profile
                       </Link>
                     )}
                     {/* <Link
