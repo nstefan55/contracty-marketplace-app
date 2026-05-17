@@ -4,7 +4,7 @@ import StarRating from "@/components/lib/StarRating";
 
 const FeaturedContractorCard = async ({ contractor, profileImages }) => {
   const {
-    _id,
+    slug,
     name,
     trade,
     averageRating,
@@ -24,7 +24,7 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
       {/* Portfolio Photo */}
       <div className="h-44 w-full bg-slate-200">
         {profileImages?.length > 0 && (
-          <Link href={`/contractors/${_id}`}>
+          <Link href={`/contractors/${slug}`}>
             <img
               src={profileImages[0]}
               alt={name}
@@ -41,7 +41,7 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
           <div className="h-12 w-12 shrink-0 rounded-full bg-slate-300">
             {profileImage && (
               <Link
-                href={`/contractors/${_id}`}
+                href={`/contractors/${slug}`}
                 className="h-full w-full rounded-full"
               >
                 <img
@@ -84,7 +84,7 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
 
         {/* Button */}
         <Link
-          href={`/contractors/${_id}`}
+          href={`/contractors/${slug}`}
           className="w-fit rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white"
         >
           View Profile

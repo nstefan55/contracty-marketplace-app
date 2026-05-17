@@ -1,10 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-export default function ContractorProfileLayout({ children, slug }) {
+export default function ContractorProfileLayout({ children }) {
   return (
     <>
-      <Navbar slug={slug} />
+      <Navbar />
       {children}
       <Footer />
     </>

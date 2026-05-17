@@ -43,7 +43,7 @@ const QuickActions = ({ slug }) => {
         </Link>
 
         <Link
-          href={`/${slug}`}
+          href={`/contractors/${slug}`}
           target="_blank"
           className="flex items-center gap-4 px-6 py-5 hover:bg-slate-50 transition-colors group"
         >

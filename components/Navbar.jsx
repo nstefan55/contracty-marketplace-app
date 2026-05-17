@@ -149,7 +149,7 @@ const Navbar = () => {
                     {session.user.role === "contractor" && (
                       <Link
                         href={
-                          contractorSlug ? `/${contractorSlug}` : "/dashboard"
+                          contractorSlug ? `/contractors/${contractorSlug}` : "/dashboard"
                         }
                         className="block px-4 py-2 text-sm text-gray-700"
                         role="menuitem"
