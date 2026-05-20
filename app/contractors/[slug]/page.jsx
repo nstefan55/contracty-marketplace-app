@@ -36,20 +36,27 @@ export default async function ContractorProfilePage({ params }) {
 
   const isOwnProfile = session?.user?.id === contractor.owner?.toString();
 
-  const [portfolio, reviews, bookmarkCount, isBookmarked] = await Promise.all([
-    Portfolio.findOne({ contractor: contractor._id })
-      .sort({ completedAt: -1 })
-      .lean(),
-    Review.findOne({ contractor: contractor._if })
-      .populate("user", "name image")
-      .sort({ createdAt: -1 })
-      .lean(),
-    User.countDocuments({ bookmarks: contractor._id }),
+  const [portfolioDoc, reviewsDoc, bookmarkCountDoc, isBookmarkedDoc] =
+    await Promise.all([
+      Portfolio.find({ contractor: contractor._id })
+        .sort({ completedAt: -1 })
+        .lean(),
+      Review.find({ contractor: contractor._id })
+        .populate("user", "name image")
+        .sort({ createdAt: -1 })
+        .lean(),
+      User.countDocuments({ bookmarks: contractor._id }),
 
-    session
-      ? User.exists({ _id: session.user.id, bookmarks: contractor._id })
-      : Promise.resolve(false),
-  ]);
+      session
+        ? User.exists({ _id: session.user.id, bookmarks: contractor._id })
+        : Promise.resolve(false),
+    ]);
+
+  //Convert Mongoose documents to plain JS objects for serialization
+  const portfolio = convertToSerializableObject(portfolioDoc);
+  const reviews = convertToSerializableObject(reviewsDoc);
+  const bookmarkCount = convertToSerializableObject(bookmarkCountDoc);
+  const isBookmarked = convertToSerializableObject(isBookmarkedDoc);
 
   //Increment view count -fire and forget, don't wait
   Contractor.updateOne(
@@ -70,7 +77,10 @@ export default async function ContractorProfilePage({ params }) {
         {/* Left column */}
         <div className="flex-1 min-w-0 flex flex-col gap-8">
           <PortfolioSection items={portfolio} />
-          <ReviewSection reviews={reviews} totalCount={contractor.reviewCount} />
+          <ReviewSection
+            reviews={reviews}
+            totalCount={contractor.reviewCount}
+          />
           <CertificationsSection
             certifications={contractor.certifications}
             yearsExperience={contractor.yearsExperience}

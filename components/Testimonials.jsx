@@ -1,7 +1,6 @@
 import connectDB from "@/config/database";
 import Review from "@/models/Review";
 import TestimonialsCard from "./TestimonialsCard";
-import User from "@/models/User";
 
 const Testimonials = async () => {
   await connectDB();

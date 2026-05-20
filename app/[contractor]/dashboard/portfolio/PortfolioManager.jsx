@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { addPortfolioItem, deletePortfolioItem } from "@/app/actions/contractor-actions";
+import {
+  addPortfolioItem,
+  deletePortfolioItem,
+} from "@/app/actions/contractor-actions";
 import { Plus, Trash2, Image as ImageIcon } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -108,6 +111,11 @@ export default function PortfolioManager({ items: initialItems, slug }) {
   const [items, setItems] = useState(initialItems);
   const [deleting, setDeleting] = useState(null);
 
+  // Refresh local items if initialItems change (e.g. after adding/deleting)
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
+
   async function handleDelete(id) {
     setDeleting(id);
     try {
@@ -145,7 +153,9 @@ export default function PortfolioManager({ items: initialItems, slug }) {
                   <div>
                     <p className="font-medium text-dark-text">{item.title}</p>
                     {item.projectType && (
-                      <p className="text-xs text-muted-foreground">{item.projectType}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.projectType}
+                      </p>
                     )}
                   </div>
                   <Button

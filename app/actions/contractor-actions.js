@@ -6,6 +6,56 @@ import Contractor from "@/models/Contractor";
 import Portfolio from "@/models/Portfolio";
 import User from "@/models/User";
 import { verifyPassword, saltAndHashPassword } from "@/lib/password";
+import Inquiry from "@/models/Inquiry";
+
+export async function createInquiry(contractorSlug, formData) {
+  await connectDB();
+
+  const session = await auth();
+  if (!session) throw new Error("You must be signed in to send an inquiry");
+
+  const contractor = await Contractor.findOne({ slug: contractorSlug });
+  if (!contractor) throw new Error("Contractor not found");
+
+  await Inquiry.create({
+    sender: session.user.id,
+    recipient: contractor.owner,
+    contractor: contractor._id,
+    projectType: formData.projectType,
+    budget: formData.budget,
+    timeline: formData.timeline,
+    siteAddress: formData.siteAddress,
+    description: formData.description,
+  });
+
+  revalidatePath(`/${contractorSlug}/dashboard`);
+}
+
+export async function toggleBookmark(contractorId) {
+  await connectDB();
+
+  const session = await auth();
+  if (!session) throw new Error("Sign in to bookmark contractors");
+
+  const user = await User.findById(session.user.id);
+  if (!user) throw new Error("User not found");
+
+  const alreadyBookmarked = user.bookmarks.some(
+    (id) => id.toString() === contractorId,
+  );
+
+  if (alreadyBookmarked) {
+    await User.updateOne(
+      { _id: session.user.id },
+      { $pull: { bookmarks: contractorId } },
+    );
+  } else {
+    await User.updateOne(
+      { _id: session.user.id },
+      { $addToSet: { bookmarks: contractorId } },
+    );
+  }
+}
 
 function toSlug(name) {
   return name
@@ -17,7 +67,8 @@ function toSlug(name) {
 
 export async function setupContractorProfile() {
   const session = await auth();
-  if (!session || session.user.role !== "contractor") throw new Error("Unauthorized");
+  if (!session || session.user.role !== "contractor")
+    throw new Error("Unauthorized");
 
   await connectDB();
 
@@ -52,7 +103,8 @@ export async function setupContractorProfile() {
 
 async function getAuthenticatedContractor(slug) {
   const session = await auth();
-  if (!session || session.user.role !== "contractor") throw new Error("Unauthorized");
+  if (!session || session.user.role !== "contractor")
+    throw new Error("Unauthorized");
 
   await connectDB();
   const contractor = await Contractor.findOne({ slug, owner: session.user.id });
@@ -72,7 +124,8 @@ export async function updateContractorProfile(slug, formData) {
   contractor.yearsExperience = formData.yearsExperience
     ? Number(formData.yearsExperience)
     : contractor.yearsExperience;
-  contractor.certifications = formData.certifications ?? contractor.certifications;
+  contractor.certifications =
+    formData.certifications ?? contractor.certifications;
 
   await contractor.save();
   revalidatePath(`/${slug}/dashboard`);
@@ -91,7 +144,9 @@ export async function addPortfolioItem(slug, formData) {
     images: formData.images || [],
     projectType: formData.projectType,
     location: formData.location,
-    completedAt: formData.completedAt ? new Date(formData.completedAt) : undefined,
+    completedAt: formData.completedAt
+      ? new Date(formData.completedAt)
+      : undefined,
   });
 
   revalidatePath(`/${slug}/dashboard/portfolio`);
@@ -101,7 +156,10 @@ export async function addPortfolioItem(slug, formData) {
 export async function deletePortfolioItem(slug, portfolioId) {
   const { contractor } = await getAuthenticatedContractor(slug);
 
-  await Portfolio.findOneAndDelete({ _id: portfolioId, contractor: contractor._id });
+  await Portfolio.findOneAndDelete({
+    _id: portfolioId,
+    contractor: contractor._id,
+  });
   revalidatePath(`/${slug}/dashboard/portfolio`);
 
   return { success: true };
@@ -123,7 +181,8 @@ export async function changePassword(currentPassword, newPassword) {
 
   await connectDB();
   const user = await User.findById(session.user.id);
-  if (!user || !user.password) throw new Error("No password set on this account");
+  if (!user || !user.password)
+    throw new Error("No password set on this account");
 
   const valid = await verifyPassword(currentPassword, user.password);
   if (!valid) throw new Error("Current password is incorrect");

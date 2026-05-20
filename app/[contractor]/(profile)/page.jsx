@@ -45,7 +45,7 @@ export default async function ContractorProfilePage({ params }) {
       Portfolio.findOne({ contractor: contractor._id })
         .sort({ completedAt: -1 })
         .lean(),
-      Review.findOne({ contractor: contractor._if })
+      Review.findOne({ contractor: contractor._id })
         .populate("user", "name image")
         .sort({ createdAt: -1 })
         .lean(),
