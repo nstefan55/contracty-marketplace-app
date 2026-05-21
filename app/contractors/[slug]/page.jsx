@@ -73,7 +73,7 @@ export default async function ContractorProfilePage({ params }) {
         session={session}
         isOwnProfile={isOwnProfile}
       />
-      <main className="max-w-7xl mx-auto px-12 py-8 flex gap-8 items-start">
+      <main className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-8 flex flex-col lg:flex-row gap-8 items-start">
         {/* Left column */}
         <div className="flex-1 min-w-0 flex flex-col gap-8">
           <PortfolioSection items={portfolio} />
@@ -87,7 +87,7 @@ export default async function ContractorProfilePage({ params }) {
           />
         </div>
         {/* Right Column */}
-        <div className="shrink-0 flex flex-col gap-6 w-95">
+        <div className="shrink-0 flex flex-col gap-6 w-full lg:w-95">
           <InquiryFormCard
             contractorSlug={slug}
             contractorName={contractor.name}

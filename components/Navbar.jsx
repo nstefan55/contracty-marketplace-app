@@ -149,7 +149,9 @@ const Navbar = () => {
                     {session.user.role === "contractor" && (
                       <Link
                         href={
-                          contractorSlug ? `/contractors/${contractorSlug}` : "/dashboard"
+                          contractorSlug
+                            ? `/contractors/${contractorSlug}`
+                            : "/dashboard"
                         }
                         className="block px-4 py-2 text-sm text-gray-700"
                         role="menuitem"
@@ -158,6 +160,22 @@ const Navbar = () => {
                         onClick={() => setIsProfileMenuOpen(false)}
                       >
                         View Public Profile
+                      </Link>
+                    )}
+                    {session.user.role === "contractor" && (
+                      <Link
+                        href={
+                          contractorSlug
+                            ? `/contractors/${contractorSlug}/edit-profile`
+                            : "/dashboard"
+                        }
+                        className="block px-4 py-2 text-sm text-gray-700"
+                        role="menuitem"
+                        tabIndex="-1"
+                        id="user-menu-item-0"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        Edit Profile
                       </Link>
                     )}
                     {/* <Link

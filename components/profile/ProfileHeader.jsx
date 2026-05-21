@@ -16,9 +16,9 @@ export default function ProfileHeader({
 
   return (
     <div className="bg-white border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-12 py-8 flex items-center gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8">
         {/* AVATAR */}
-        <div className="w-30 h-30 rounded-full overflow-hidden bg-slate-200 shrink-0">
+        <div className="w-24 h-24 sm:w-30 sm:h-30 rounded-full overflow-hidden bg-slate-200 shrink-0">
           <Image
             src={contractor.profileImage}
             alt={contractor.name}

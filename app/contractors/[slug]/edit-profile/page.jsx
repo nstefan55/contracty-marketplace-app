@@ -3,9 +3,10 @@ import { redirect } from "next/navigation";
 import connectDB from "@/config/database";
 import Contractor from "@/models/Contractor";
 import EditProfileForm from "@/components/profile/EditProfileForm";
+import { ContractorBreadcrumbNav } from "@/components/dashboard/ContractorBreadcrumbNav";
 
 export default async function EditProfilePage({ params }) {
-  const { contractor: slug } = await params;
+  const { slug } = await params;
   const session = await auth();
   if (!session) redirect("/signin");
 
@@ -16,14 +17,17 @@ export default async function EditProfilePage({ params }) {
   const data = JSON.parse(JSON.stringify(contractor));
 
   return (
-    <div className="max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Edit Profile</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Update your public contractor profile.
-        </p>
+    <>
+      <div className="max-w-2xl space-y-6 mx-auto py-8">
+        <ContractorBreadcrumbNav className="mx-auto" slug={slug} />
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Edit Profile</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Update your public contractor profile.
+          </p>
+        </div>
+        <EditProfileForm contractor={data} slug={slug} />
       </div>
-      <EditProfileForm contractor={data} slug={slug} />
-    </div>
+    </>
   );
 }
