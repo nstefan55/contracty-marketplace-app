@@ -2,9 +2,7 @@ import Link from "next/link";
 
 import StarRating from "@/components/lib/StarRating";
 
-import Image from "next/image";
-import { BadgeCheck, MapPin, Banknote, CircleUser } from "lucide-react";
-import BookmarkButton from "@/components/profile/BookmarkButton";
+import { BadgeCheck, Banknote } from "lucide-react";
 
 const ContractorCard = async ({ contractor, profileImages }) => {
   const {
@@ -12,12 +10,7 @@ const ContractorCard = async ({ contractor, profileImages }) => {
     slug,
     profileImage,
     trade,
-    serviceArea,
     priceRange,
-    yearsExperience,
-    available,
-    featured,
-    verified,
     averageRating,
     reviewCount,
   } = contractor;

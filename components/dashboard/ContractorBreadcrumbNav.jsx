@@ -29,14 +29,12 @@ export async function ContractorBreadcrumbNav({ slug }) {
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href="/">Homepage</Link>
-          </BreadcrumbLink>
+          <BreadcrumbLink render={<Link href="/" />}>Homepage</BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbLink asChild>
-            <Link href={`/${slug}/dashboard`}>Dashboard</Link>
+          <BreadcrumbLink render={<Link href={`/${slug}/dashboard`} />}>
+            Dashboard
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
