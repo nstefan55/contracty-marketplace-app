@@ -1,4 +1,5 @@
 import { Noto_Sans, Raleway, Source_Sans_3, Geist } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 import AuthProvider from "@/components/AuthProvider";
 import { auth } from "@/app/auth";
 import "./globals.css";
@@ -25,10 +26,13 @@ export default async function RootLayout({ children }) {
           raleway.className,
           sourceSans3.className,
           "font-sans",
-          geist.variable
+          geist.variable,
         )}
       >
-        <body>{children}</body>
+        <body>
+          {children}
+          <Toaster position="top-center" />
+        </body>
       </html>
     </AuthProvider>
   );

@@ -37,16 +37,16 @@ const Stats = ({ contractor, inquiryCount, bookmarkCount }) => {
     },
   ];
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
       {stats.map(({ label, value, icon: Icon, iconBg, iconColor, sub }) => (
         <div
           key={label}
-          className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+          className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm"
         >
           <div className={`inline-flex rounded-lg p-2 mb-3 ${iconBg}`}>
             <Icon size={16} className={iconColor} />
           </div>
-          <p className="text-2xl font-bold text-slate-900 leading-none">
+          <p className="text-xl sm:text-2xl font-bold text-slate-900 leading-none truncate">
             {value}
           </p>
           <p className="text-xs font-medium text-slate-500 mt-1">{label}</p>

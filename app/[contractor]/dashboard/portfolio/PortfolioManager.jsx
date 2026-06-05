@@ -52,7 +52,9 @@ function AddProjectDialog({ slug, onSuccess }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className={buttonVariants({ size: "sm" })}>
+      <DialogTrigger
+        className={`${buttonVariants({ size: "sm" })} w-full sm:w-auto`}
+      >
         <Plus size={14} className="mr-1.5" />
         Add Project
       </DialogTrigger>
@@ -131,7 +133,7 @@ export default function PortfolioManager({ items: initialItems, slug }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-stretch sm:justify-end">
         <AddProjectDialog slug={slug} onSuccess={() => router.refresh()} />
       </div>
 

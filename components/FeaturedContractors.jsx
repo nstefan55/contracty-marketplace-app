@@ -2,7 +2,7 @@ import connectDB from "@/config/database";
 import Contractor from "@/models/Contractor";
 import Portfolio from "@/models/Portfolio";
 
-import FeaturedContractorCard from "./FeaturedContractorCard";
+import FeaturedContractorCard from "@/components/FeaturedContractorCard";
 
 const FeaturedContractors = async () => {
   await connectDB();

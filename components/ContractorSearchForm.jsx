@@ -23,8 +23,8 @@ const CONTRACTOR_TYPES = [
   "Window & Door Specialist",
 ];
 
-const PropertySearchForm = () => {
-  const [name, setName] = useState("");
+const ContractorSearchForm = () => {
+  const [location, setLocation] = useState("");
   const [contractorType, setContractorType] = useState("All");
 
   const router = useRouter();
@@ -32,12 +32,14 @@ const PropertySearchForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (name === "" && contractorType === "All") {
-      router.push("/contractors");
-    } else {
-      const query = `?name=${name}&contractorType=${contractorType}`;
-      router.push(`/contractors/search-results${query}`);
+    const params = new URLSearchParams();
+    if (location) params.set("serviceArea", location);
+    if (contractorType && contractorType !== "All") {
+      params.set("trade", contractorType);
     }
+
+    const qs = params.toString();
+    router.push(qs ? `/contractors?${qs}` : "/contractors");
   };
 
   return (
@@ -46,18 +48,18 @@ const PropertySearchForm = () => {
       className="mx-auto mt-5 flex w-full max-w-2xl flex-col"
     >
       <div className="flex flex-col items-stretch gap-2 md:flex-row md:items-center">
-        <label htmlFor="name" className="sr-only">
-          Name
+        <label htmlFor="location" className="sr-only">
+          Location
         </label>
         <div className="relative flex-1">
           <ScanSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:h-5 sm:w-5" />
           <input
             type="text"
-            id="name"
-            placeholder="Search by Trade or Name"
+            id="location"
+            placeholder="Search by Location"
             className="w-full rounded-lg bg-[#071525] py-3 pl-10 pr-4 text-white placeholder:text-white focus:outline-none focus:ring focus:ring-orange-500 sm:pl-11"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
           />
         </div>
         <button
@@ -87,4 +89,4 @@ const PropertySearchForm = () => {
   );
 };
 
-export default PropertySearchForm;
+export default ContractorSearchForm;

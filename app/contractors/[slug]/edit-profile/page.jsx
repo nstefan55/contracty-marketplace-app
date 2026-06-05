@@ -12,7 +12,8 @@ export default async function EditProfilePage({ params }) {
 
   await connectDB();
   const contractor = await Contractor.findOne({ slug }).lean();
-  if (!contractor) redirect("/");
+  const isOwner = session.user.id === contractor?.owner.toString();
+  if (!contractor || !isOwner) redirect("/");
 
   const data = JSON.parse(JSON.stringify(contractor));
 

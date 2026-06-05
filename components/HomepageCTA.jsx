@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { auth } from "@/app/auth";
 
-const HomepageCTA = () => {
+const HomepageCTA = async () => {
+  const session = await auth();
   return (
     <section className="bg-[#1E293B] py-24 px-12">
       <div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-5">
@@ -15,15 +17,16 @@ const HomepageCTA = () => {
           Browse All Contractors →
         </Link>
 
-        <p className="text-[#94A3B8] text-sm align-middle">
-          Or //TODO - Change the link to the contractor registration page
-          <Link
-            href="/register?role=contractor"
-            className="underline hover:text-white transition-colors"
-          >
-            sign up as a contractor
-          </Link>
-        </p>
+        {!session && (
+          <p className="text-[#94A3B8] text-sm align-middle">
+            <Link
+              href="/signup"
+              className="underline hover:text-white transition-colors"
+            >
+              sign up as a contractor
+            </Link>
+          </p>
+        )}
       </div>
     </section>
   );

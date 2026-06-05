@@ -2,17 +2,24 @@ import Link from "next/link";
 
 import StarRating from "@/components/lib/StarRating";
 
-import { Banknote } from "lucide-react";
+import Image from "next/image";
+import { BadgeCheck, MapPin, Banknote, CircleUser } from "lucide-react";
+import BookmarkButton from "@/components/profile/BookmarkButton";
 
-const FeaturedContractorCard = async ({ contractor, profileImages }) => {
+const ContractorCard = async ({ contractor, profileImages }) => {
   const {
-    slug,
     name,
+    slug,
+    profileImage,
     trade,
+    serviceArea,
+    priceRange,
+    yearsExperience,
+    available,
+    featured,
+    verified,
     averageRating,
     reviewCount,
-    profileImage,
-    priceRange,
   } = contractor;
 
   const hourly = priceRange?.hourly;
@@ -22,7 +29,7 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
   const currency = priceRange?.currency ?? "EUR";
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-xl border bg-white ">
+    <div className="flex flex-col overflow-hidden rounded-xl border bg-white max-w-xl items-start">
       {/* Portfolio Photo */}
       <div className="h-44 w-full bg-slate-200">
         {profileImages?.length > 0 && (
@@ -56,8 +63,35 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
           </div>
           <div className="flex flex-col">
             <span className="text-base font-bold text-slate-800">{name}</span>
-            <span className="text-xs text-slate-500">{trade}</span>
+            <span className="text-md text-slate-500">{trade}</span>
           </div>
+        </div>
+
+        {/* BADGES */}
+        <div className="flex items-center gap-2 flex-wrap my-2">
+          {contractor.verified && (
+            <span className="bg-green-500 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+              <BadgeCheck className="w-4 h-4 mr-1 inline" />
+              Verified
+            </span>
+          )}
+          {contractor.featured && (
+            <span className="bg-orange-500 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+              <BadgeCheck className="w-4 h-4 mr-1 inline" />
+              Featured
+            </span>
+          )}
+          {contractor.yearsExperience && (
+            <span className="bg-blue-500 text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full">
+              <BadgeCheck className="w-4 h-4 mr-1 inline" />
+              {contractor.yearsExperience} years of experience
+            </span>
+          )}
+          <span
+            className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full ${contractor.available ? "bg-green-500 text-white" : "bg-gray-200 text-gray-600"}`}
+          >
+            {contractor.available ? "Open to Work" : "Unavailable"}
+          </span>
         </div>
 
         {/* Stars + review count */}
@@ -99,4 +133,4 @@ const FeaturedContractorCard = async ({ contractor, profileImages }) => {
   );
 };
 
-export default FeaturedContractorCard;
+export default ContractorCard;

@@ -16,7 +16,7 @@ const Navbar = () => {
 
   return (
     <nav className="w-full border-b border-slate-200 bg-white">
-      <div className="container mx-auto flex max-w-7xl flex-col px-4 py-4 md:flex-row md:items-center md:justify-between">
+      <div className="container mx-auto flex max-w-8xl flex-col px-4 py-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
             <Image
@@ -34,7 +34,7 @@ const Navbar = () => {
             className="inline-flex items-center justify-center rounded-md border border-slate-200 p-2 text-slate-700 transition hover:bg-slate-50 md:hidden"
             aria-label="Toggle navigation menu"
             aria-expanded={isMenuOpen}
-            onClick={() => setIsMenuOpen((open) => !open)}
+            onClick={() => setIsMenuOpen((prev) => !prev)}
           >
             <span className="flex h-4 w-5 flex-col justify-between">
               <span className="h-0.5 w-full rounded-full bg-current" />
@@ -45,7 +45,7 @@ const Navbar = () => {
         </div>
 
         <div
-          className={`mt-4 flex flex-col gap-3 md:mt-0 md:flex-row md:items-center md:gap-6 ${
+          className={`mt-4 flex-col gap-3 md:mt-0 md:flex-row md:items-center md:gap-6 ${
             isMenuOpen ? "flex" : "hidden md:flex"
           }`}
         >
@@ -86,7 +86,7 @@ const Navbar = () => {
           )}
           {/* <!-- Logged in as CONTRACTOR --> */}
           {session && session.user.role === "contractor" && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
+            <div className="flex items-center md:ml-6">
               <Link href="/messages" className="relative group">
                 <button
                   type="button"
@@ -140,7 +140,7 @@ const Navbar = () => {
                 {isProfileMenuOpen && (
                   <div
                     id="user-menu"
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute left-0 md:left-auto md:right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"
@@ -207,7 +207,7 @@ const Navbar = () => {
           )}
           {/* <!-- Logged in as USER --> */}
           {session && session.user.role === "homeowner" && (
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
+            <div className="flex items-center md:ml-6">
               <Link href="/messages" className="relative group">
                 <button
                   type="button"
@@ -237,7 +237,7 @@ const Navbar = () => {
                 <div>
                   <button
                     onClick={() => {
-                      setIsProfileMenuOpen((open) => !open);
+                      setIsProfileMenuOpen((prev) => !prev);
                     }}
                     type="button"
                     className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -261,7 +261,7 @@ const Navbar = () => {
                 {isProfileMenuOpen && (
                   <div
                     id="user-menu"
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                    className="absolute left-0 md:left-auto md:right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
                     role="menu"
                     aria-orientation="vertical"
                     aria-labelledby="user-menu-button"

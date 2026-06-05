@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { BadgeCheck, MapPin, Banknote, CircleUser, Send } from "lucide-react";
+import { BadgeCheck, MapPin, Banknote, CircleUser } from "lucide-react";
 import StarRating from "../lib/StarRating";
 import BookmarkButton from "./BookmarkButton";
 
@@ -90,18 +90,11 @@ export default function ProfileHeader({
             {session && !isOwnProfile && (
               <>
                 <a
-                  href="#inquiry-form"
+                  href={`mailto:${contractor.email}`}
                   className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                 >
                   <CircleUser className="w-4 h-4 mr-1 inline" />
                   Contact
-                </a>
-                <a
-                  href="#inquiry-form"
-                  className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors"
-                >
-                  <Send className="w-4 h-4 mr-1 inline" />
-                  Send Inquiry
                 </a>
                 <BookmarkButton
                   contractorId={contractor._id}

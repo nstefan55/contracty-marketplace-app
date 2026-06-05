@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { createInquiry } from "@/app/actions/contractor-actions";
 import toast from "react-hot-toast";
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, Send } from "lucide-react";
 
 export default function InquiryFormCard({
   contractorSlug,
@@ -101,10 +101,11 @@ export default function InquiryFormCard({
 
         <Button
           type="submit"
-          disabled={!isLoggedIn || loading}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold"
+          disabled={loading || !isLoggedIn}
+          className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors"
         >
-          {loading ? "Sending…" : "Send Inquiry →"}
+          <Send className="w-4 h-4 mr-1 inline" />
+          Send Inquiry
         </Button>
 
         {!isLoggedIn && (

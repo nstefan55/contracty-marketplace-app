@@ -48,6 +48,10 @@ export async function POST(request) {
 
   await User.updateOne({ email }, { otp, otpExpiry });
 
+  if (process.env.NODE_ENV === "development") {
+    console.log(`[OTP] ${email} → ${otp}`);
+  }
+
   await resend.emails.send({
     from: "Contracty <onboarding@contracty.com>",
     to: email,

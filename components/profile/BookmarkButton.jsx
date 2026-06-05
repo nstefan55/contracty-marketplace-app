@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, BookmarkFilled } from "lucide-react";
-
+import { Bookmark } from "lucide-react";
 import toast from "react-hot-toast";
+
+import { toggleBookmark as toggleBookmarkAction } from "@/app/actions/contractor-actions";
 
 export default function BookmarkButton({
   contractorId,
@@ -14,24 +15,44 @@ export default function BookmarkButton({
   const [saved, setSaved] = useState(initialBookmarked);
   const [loading, setLoading] = useState(false);
 
-  const toggleBookmark = async () => {
+  const handleClick = async () => {
     setLoading(true);
     try {
-      await toggleBookmark(contractorId);
-      setSaved((prev) => !prev);
-      toast.success(saved ? "Removed from bookmarks" : "Added to bookmarks");
+      await toggleBookmarkAction(contractorId);
+      const next = !saved;
+      setSaved(next);
+      toast.success(next ? "Contractor bookmarked" : "Bookmark removed", {
+        iconTheme: {
+          primary: "#F54A00",
+          secondary: "#ffff",
+        },
+      });
     } catch (error) {
-      toast.error(error.message ?? "Something went wrong");
+      toast.error(error.message ?? "Something went wrong", {
+        iconTheme: {
+          primary: "#FF0000",
+          secondary: "#ffff",
+        },
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  const isOwner =
+    session && contractor && session.user.id === contractor._id.toString();
+
   return (
     <button
-      onClick={toggleBookmark}
-      disabled={loading}
-      className={`p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors ${session && contractor && session.user.id === contractor._id.toString() ? "bg-red-500 none text-slate-400 cursor-not-allowed" : ""} ${saved ? "bg-orange-50 border-orange-200 text-orange-500" : "border-slate-200 text-slate-400 hover:bg-slate-50"}`}
+      onClick={handleClick}
+      disabled={loading || isOwner}
+      className={`p-2 rounded-full border transition-colors ${
+        isOwner
+          ? "bg-gray-100 text-slate-400 cursor-not-allowed border-slate-200"
+          : saved
+            ? "bg-orange-50 border-orange-200 text-orange-500 hover:bg-orange-100"
+            : "bg-gray-100 border-slate-200 text-slate-400 hover:bg-slate-200"
+      }`}
       aria-label={saved ? "Remove from bookmarks" : "Bookmark Contractor"}
     >
       <Bookmark size={18} fill={saved ? "currentColor" : "none"} />

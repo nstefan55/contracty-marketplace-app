@@ -21,7 +21,7 @@ export default async function PortfolioPage({ params }) {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-dark-text">My Portfolio</h1>
+        <h1 className="text-xl sm:text-2xl font-semibold text-dark-text">My Portfolio</h1>
         <p className="text-sm text-muted-foreground mt-1">
           Showcase your completed projects to attract clients.
         </p>

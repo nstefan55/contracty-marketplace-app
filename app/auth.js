@@ -14,6 +14,12 @@ import { verifyPassword } from "@/lib/password";
 
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 
+import { authRateLimiter } from "@/lib/ratelimit";
+
+import { headers } from "next/headers";
+
+import { RateLimitError } from "@/lib/error";
+
 const DEFAULT_IMAGE =
   "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
 
@@ -41,6 +47,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         signInToken: { label: "Sign-in token", type: "text" },
       },
       authorize: async (credentials) => {
+        const headerList = await headers();
+        const ip = headerList.get("x-forwarded-for") || "unknown";
+
+        const { success, reset } = await authRateLimiter.limit(
+          `credentials:${ip}`,
+        );
+
+        if (!success) {
+          const retryAfter = Math.ceil((reset - Date.now()) / 1000 / 60); // in minutes
+          throw new RateLimitError(retryAfter);
+        }
+
         await connectDB();
 
         // Post-OTP sign-in via one-time token
@@ -110,6 +128,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        const { success, reset } = await authRateLimiter.limit(
+          `google:${user.email}`,
+        );
+
+        if (!success) {
+          return "/signin?error=tooManyRequests";
+        }
+
         await connectDB();
         const exists = await User.findOne({ email: user.email });
         if (!exists) {

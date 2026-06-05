@@ -15,7 +15,7 @@ const initialState = {
   errors: {},
 };
 
-const SignInPage = () => {
+const SignInPage = ({ searchParams }) => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -26,6 +26,17 @@ const SignInPage = () => {
     credentialsSignIn,
     initialState,
   );
+
+  const error = searchParams?.error;
+
+  const messages = {
+    CredentialsSignin: "Invalid email or password.",
+    TooManyRequests:
+      "Too many attempts. Please wait a few minutes and try again.",
+    Configuration: "Server configuration error.",
+  };
+
+  const errorMessage = error ? (messages[error] ?? error) : null;
 
   const handleSendOTP = async () => {
     const email = emailRef.current?.value?.trim();
@@ -92,6 +103,9 @@ const SignInPage = () => {
           <span className="text-[13px] text-[#94a3b8]">or</span>
           <div className="flex-1 h-px bg-border" />
         </div>
+
+        {/* Rate Limit Error Message */}
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="flex flex-col gap-1.5">

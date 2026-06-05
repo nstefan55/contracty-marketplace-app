@@ -111,14 +111,17 @@ export default function DashboardSidebar({ slug, unreadCount = 0 }) {
   return (
     <>
       {/* Mobile top bar */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-20 px-4 bg-white border-b border-slate-200">
-        <Image
-          src="/images/logo/contracty-logo.png"
-          alt="Contracty Logo"
-          width={80}
-          height={80}
-        />
-        <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-4 bg-white border-b border-slate-200">
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/images/logo/contracty-logo.png"
+            alt="Contracty Logo"
+            width={40}
+            height={40}
+            className="shrink-0"
+          />
+        </Link>
+        <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-widest text-slate-400">
           Contractor Hub
         </p>
         <button
@@ -146,35 +149,39 @@ export default function DashboardSidebar({ slug, unreadCount = 0 }) {
           open ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-          <Image
-            src={profilePicture}
-            alt="Profile Picture"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">
+        <div className="flex items-center justify-between gap-2 px-4 py-4 border-b border-slate-100">
+          {profilePicture ? (
+            <Image
+              src={profilePicture}
+              alt="Profile Picture"
+              width={40}
+              height={40}
+              className="rounded-full shrink-0"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-slate-200 shrink-0" />
+          )}
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 truncate">
             Contractor Hub
           </p>
           <button
             onClick={() => setOpen(false)}
-            className="lg:hidden p-1 rounded text-slate-400 hover:text-slate-600 transition-colors"
+            className="lg:hidden p-1 rounded text-slate-400 hover:text-slate-600 transition-colors shrink-0"
             aria-label="Close menu"
           >
             <X size={16} />
           </button>
         </div>
         {navLinks}
-        <div className="flex justify-center items-center gap-4  text-center px-4 py-6 mt-auto border-t border-slate-200">
+        <div className="flex items-center justify-center gap-3 px-4 py-5 mt-auto border-t border-slate-200">
           <Image
             src="/images/logo/contracty-logo.png"
             alt="Contracty Logo"
-            width={90}
-            height={90}
-            className="pl-4 pb-4"
+            width={48}
+            height={48}
+            className="shrink-0"
           />
-          <p className="text-sm text-black">&copy; {currentYear} Contracty.</p>
+          <p className="text-xs text-slate-500">&copy; {currentYear} Contracty.</p>
         </div>
       </aside>
     </>

@@ -4,13 +4,13 @@ import { UserPen, Images, ExternalLink } from "lucide-react";
 const QuickActions = ({ slug }) => {
   return (
     <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-      <div className="px-6 py-4 border-b border-slate-100">
+      <div className="px-4 sm:px-6 py-4 border-b border-slate-100">
         <h2 className="text-sm font-semibold text-slate-800">Quick Actions</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
         <Link
           href={`/${slug}/dashboard/edit-profile`}
-          className="flex items-center gap-4 px-6 py-5 hover:bg-orange-50 transition-colors group"
+          className="flex items-center gap-4 px-4 sm:px-6 py-5 hover:bg-orange-50 transition-colors group"
         >
           <div className="shrink-0 rounded-xl bg-[#FF6900] p-3">
             <UserPen size={18} className="text-white" />
@@ -27,7 +27,7 @@ const QuickActions = ({ slug }) => {
 
         <Link
           href={`/${slug}/dashboard/portfolio`}
-          className="flex items-center gap-4 px-6 py-5 hover:bg-slate-50 transition-colors group"
+          className="flex items-center gap-4 px-4 sm:px-6 py-5 hover:bg-slate-50 transition-colors group"
         >
           <div className="shrink-0 rounded-xl bg-slate-100 p-3">
             <Images size={18} className="text-slate-500" />
@@ -45,7 +45,7 @@ const QuickActions = ({ slug }) => {
         <Link
           href={`/contractors/${slug}`}
           target="_blank"
-          className="flex items-center gap-4 px-6 py-5 hover:bg-slate-50 transition-colors group"
+          className="flex items-center gap-4 px-4 sm:px-6 py-5 hover:bg-slate-50 transition-colors group"
         >
           <div className="shrink-0 rounded-xl bg-slate-100 p-3">
             <ExternalLink size={18} className="text-slate-500" />

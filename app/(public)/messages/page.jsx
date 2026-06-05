@@ -75,8 +75,8 @@ export default async function MessagesPage() {
               });
 
               const contactName = isContractor
-                ? (inq.sender?.name ?? "Unknown")
-                : (inq.contractor?.name ?? "Unknown");
+                ? (inq.sender?.name ?? "User")
+                : (inq.contractor?.name ?? "User");
 
               const subLine = isContractor
                 ? inq.sender?.email

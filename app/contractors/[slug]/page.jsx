@@ -87,7 +87,7 @@ export default async function ContractorProfilePage({ params }) {
           />
         </div>
         {/* Right Column */}
-        <div className="shrink-0 flex flex-col gap-6 w-full lg:w-95">
+        <aside className="shrink-0 flex flex-col gap-6 w-full lg:w-95">
           <InquiryFormCard
             contractorSlug={slug}
             contractorName={contractor.name}
@@ -99,7 +99,7 @@ export default async function ContractorProfilePage({ params }) {
             bookmarkCount={bookmarkCount}
             isBookmarked={isBookmarked}
           />
-        </div>
+        </aside>
       </main>
     </>
   );

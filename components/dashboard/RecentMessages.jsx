@@ -40,8 +40,8 @@ const RecentMessages = ({ recentInquiries = [] }) => {
                 key={id}
                 className="flex items-center justify-between gap-3 px-4 sm:px-6 py-4 hover:bg-slate-50 transition-colors"
               >
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-800">{senderName}</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-slate-800 truncate">{senderName}</p>
                   <p className="text-xs text-slate-400 truncate mt-0.5">
                     {inq.projectType} · {inq.description.slice(0, 70)}…
                   </p>
