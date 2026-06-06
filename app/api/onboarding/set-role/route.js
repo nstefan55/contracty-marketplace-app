@@ -6,16 +6,16 @@ import User from "@/models/User";
 import { resend } from "@/config/resend";
 import { auth } from "@/app/auth";
 
+import { roleSchema } from "@/lib/zod";
+
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 export async function POST(request) {
-  const { role } = await request.json();
+  const { role } = await roleSchema.parse(await request.json());
 
-  if (!["homeowner", "contractor"].includes(role)) {
-    return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-  }
+  let otp;
 
   await connectDB();
 
@@ -53,7 +53,7 @@ export async function POST(request) {
   }
 
   // Credentials user: save role and send OTP
-  const otp = generateOTP();
+  otp = generateOTP();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
   await User.updateOne({ email }, { role, otp, otpExpiry });
