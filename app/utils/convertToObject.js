@@ -1,4 +1,4 @@
-export function convertToSerializableObject(val) {
+export default function convertToSerializableObject(val) {
   if (val === null || val === undefined) return val;
 
   if (Array.isArray(val)) {

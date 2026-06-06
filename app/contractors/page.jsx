@@ -7,15 +7,25 @@ import SidebarFilter from "@/components/SidebarFilter";
 import contractorFilterQuery from "@/lib/contractorFilterQuery";
 import { SearchX } from "lucide-react";
 import ClearFiltersButton from "@/components/lib/ClearFiltersButton";
+import ShowAppliedFilters from "@/components/ShowAppliedFilters";
+import { auth } from "@/app/auth";
 
 const ContractorsPage = async ({ searchParams }) => {
   await connectDB();
+
+  const session = await auth();
+
+  const sessionUserId = session?.user?.id;
 
   const sp = await searchParams;
 
   const { page = 1, pageSize = 9 } = sp;
 
   let query = contractorFilterQuery(sp);
+
+  if (sessionUserId) {
+    query.owner = { $ne: sessionUserId };
+  }
 
   const skip = (page - 1) * pageSize;
 
@@ -44,7 +54,7 @@ const ContractorsPage = async ({ searchParams }) => {
 
   return (
     <section className="px-4 py-6">
-      <div className="max-w-8xl mx-auto flex flex-col md:flex-row gap-6 px-25">
+      <div className="max-w-8xl mx-auto flex flex-col md:flex-row gap-6 px-10">
         <aside className="md:w-85 md:shrink-0">
           <SidebarFilter />
         </aside>
@@ -63,6 +73,7 @@ const ContractorsPage = async ({ searchParams }) => {
             </div>
           ) : (
             <>
+              <ShowAppliedFilters searchParams={searchParams} />
               <p>{`${totalItems} Contractors Found`}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
                 {contractors.map((contractor) => (

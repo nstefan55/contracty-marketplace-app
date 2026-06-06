@@ -209,17 +209,6 @@ const SidebarFilter = () => {
         </Select>
       </FilterSection>
 
-      <FilterSection icon={MapPin} label="Address">
-        <Input
-          type="text"
-          name="serviceArea.address"
-          value={filters["serviceArea.address"]}
-          onChange={handleChange}
-          placeholder="e.g. Ilica 1"
-          className="h-9"
-        />
-      </FilterSection>
-
       <FilterSection icon={MapPin} label="Postcode">
         <Input
           type="text"

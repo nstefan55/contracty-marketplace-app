@@ -1,5 +1,3 @@
-// Edge-safe config used by middleware — no Node.js modules imported here.
-// The full config (with DB, bcrypt) lives in app/auth.js.
 export const authConfig = {
   providers: [],
 

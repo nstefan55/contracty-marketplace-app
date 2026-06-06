@@ -853,7 +853,7 @@ export default function NotFound() {
             <Link href="/contractors?trade=plumber" className="nf-chip">
               Plumber
             </Link>
-            <Link href="/contractors?trade=roofer" className="nf-chip">
+            <Link href="/contractors?trade=Roofer" className="nf-chip">
               Roofer
             </Link>
             <Link href="/contractors?trade=landscaper" className="nf-chip">

@@ -14,7 +14,7 @@ import InquiryFormCard from "@/components/profile/InquiryFormCard";
 import ServiceAreaCard from "@/components/profile/ServiceAreaCard";
 import QuickStatsCard from "@/components/profile/QuickStatsCard";
 
-import { convertToSerializableObject } from "@/app/utils/convertToObject";
+import convertToSerializableObject from "@/app/utils/convertToObject";
 
 export default async function ContractorProfilePage({ params }) {
   await connectDB();

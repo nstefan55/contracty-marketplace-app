@@ -25,7 +25,7 @@ const ContractorCard = async ({ contractor, profileImages }) => {
     <div className="flex flex-col overflow-hidden rounded-xl border bg-white max-w-xl items-start">
       {/* Portfolio Photo */}
       <div className="h-44 w-full bg-slate-200">
-        {profileImages?.length > 0 && (
+        {profileImages?.length > 0 ? (
           <Link href={`/contractors/${slug}`}>
             <img
               src={profileImages[0]}
@@ -33,6 +33,10 @@ const ContractorCard = async ({ contractor, profileImages }) => {
               className="h-full w-full object-cover"
             />
           </Link>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm font-medium text-slate-500">
+            User has not uploaded any portfolio photos.
+          </div>
         )}
       </div>
 
@@ -49,6 +53,7 @@ const ContractorCard = async ({ contractor, profileImages }) => {
                 <img
                   src={profileImage}
                   alt={name}
+                  referrerPolicy="no-referrer"
                   className="h-full w-full rounded-full object-cover"
                 />
               </Link>
