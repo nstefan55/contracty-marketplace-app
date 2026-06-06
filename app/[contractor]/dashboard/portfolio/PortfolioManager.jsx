@@ -17,16 +17,19 @@ import {
   addPortfolioItem,
   deletePortfolioItem,
 } from "@/app/actions/contractor-actions";
-import { Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Image as ImageIcon, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { CldUploadWidget } from "next-cloudinary";
 
 function AddProjectDialog({ slug, onSuccess }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: "",
-    description: "",
     projectType: "",
+    description: "",
+    location: "",
+    images: [],
     completedAt: "",
   });
 
@@ -41,7 +44,14 @@ function AddProjectDialog({ slug, onSuccess }) {
       await addPortfolioItem(slug, form);
       toast.success("Project added");
       setOpen(false);
-      setForm({ title: "", description: "", projectType: "", completedAt: "" });
+      setForm({
+        title: "",
+        projectType: "",
+        description: "",
+        location: "",
+        images: [],
+        completedAt: "",
+      });
       onSuccess();
     } catch (err) {
       toast.error(err.message ?? "Something went wrong");
@@ -89,6 +99,62 @@ function AddProjectDialog({ slug, onSuccess }) {
               value={form.description}
               onChange={(e) => set("description", e.target.value)}
             />
+          </div>
+          <div className="space-y-1.5">
+            <Label>Images</Label>
+            <CldUploadWidget
+              uploadPreset="next_cloudinary"
+              options={{ multiple: false, sources: ["local"] }}
+              onSuccess={(result) => {
+                if (result.event === "success") {
+                  set("images", [...form.images, result.info.secure_url]);
+                  toast.success("Image added");
+                }
+              }}
+            >
+              {({ open }) => (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => open()}
+                  className="w-full justify-center"
+                >
+                  <Upload size={14} className="mr-1.5" />
+                  {form.images.length > 0
+                    ? `Add more (${form.images.length} uploaded)`
+                    : "Upload images"}
+                </Button>
+              )}
+            </CldUploadWidget>
+            {form.images.length > 0 && (
+              <div className="grid grid-cols-3 gap-2 pt-2">
+                {form.images.map((url, idx) => (
+                  <div
+                    key={url}
+                    className="relative aspect-square overflow-hidden rounded-md border border-border bg-muted"
+                  >
+                    <img
+                      src={url}
+                      alt={`Upload ${idx + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        set(
+                          "images",
+                          form.images.filter((u) => u !== url),
+                        )
+                      }
+                      className="absolute top-1 right-1 grid h-5 w-5 place-items-center rounded-full bg-background/90 text-muted-foreground shadow-sm hover:text-destructive"
+                      aria-label="Remove image"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="completedAt">Completion Date</Label>

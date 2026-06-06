@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 
 export default function PortfolioSection({ items }) {
@@ -24,14 +25,15 @@ export default function PortfolioSection({ items }) {
             key={item._id}
             className="rounded-xl border border-slate-200 bg-white overflow-hidden"
           >
-            {/* Photo slot — replace this div with <Image> when upload is ready */}
-            <div className="w-full aspect-video bg-slate-100 flex items-center justify-center">
+            <div className="relative w-full aspect-video bg-slate-100 flex items-center justify-center">
               {item.images?.[0] ? (
-                // When images are uploaded, render them here:
-                // <Image src={item.images[0]} alt={item.title} fill className="object-cover" />
-                <span className="text-xs text-slate-400">
-                  Photo coming soon
-                </span>
+                <Image
+                  src={item.images[0]}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  className="object-cover"
+                />
               ) : (
                 <ImageIcon size={24} className="text-slate-300" />
               )}
