@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import StarRating from "@/components/lib/StarRating";
 
-import { BadgeCheck, Banknote } from "lucide-react";
+import { BadgeCheck, Banknote, MapPin } from "lucide-react";
 
 const ContractorCard = async ({ contractor, profileImages }) => {
   const {
@@ -10,6 +10,7 @@ const ContractorCard = async ({ contractor, profileImages }) => {
     slug,
     profileImage,
     trade,
+    serviceArea,
     priceRange,
     averageRating,
     reviewCount,
@@ -63,6 +64,18 @@ const ContractorCard = async ({ contractor, profileImages }) => {
             <span className="text-base font-bold text-slate-800">{name}</span>
             <span className="text-md text-slate-500">{trade}</span>
           </div>
+        </div>
+
+        {/* LOCATION */}
+        <div className="flex items-center gap-2 flex-wrap my-2 my-auto">
+          {contractor.serviceArea && (
+            <>
+              <MapPin className="w-4 h-4 text-slate-500" />
+              <span className="text-sm">
+                {serviceArea.address} , {serviceArea.postcode}
+              </span>
+            </>
+          )}
         </div>
 
         {/* BADGES */}

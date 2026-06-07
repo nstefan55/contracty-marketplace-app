@@ -20,9 +20,7 @@ import { headers, cookies } from "next/headers";
 
 import { RateLimitError } from "@/lib/error";
 
-const DEFAULT_IMAGE =
-  "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png" ||
-  "/images/default-image.png";
+const DEFAULT_IMAGE = "/images/default-image.png";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,

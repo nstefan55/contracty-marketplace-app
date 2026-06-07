@@ -3,6 +3,8 @@ import { BadgeCheck, MapPin, Banknote, CircleUser } from "lucide-react";
 import StarRating from "../lib/StarRating";
 import BookmarkButton from "./BookmarkButton";
 
+const DEFAULT_IMAGE = "/images/default-image.png";
+
 export default function ProfileHeader({
   contractor,
   bookmarkCount,
@@ -20,7 +22,7 @@ export default function ProfileHeader({
         {/* AVATAR */}
         <div className="w-24 h-24 sm:w-30 sm:h-30 rounded-full overflow-hidden bg-slate-200 shrink-0">
           <Image
-            src={contractor.profileImage}
+            src={contractor.profileImage || DEFAULT_IMAGE}
             alt={contractor.name}
             width={120}
             height={120}
