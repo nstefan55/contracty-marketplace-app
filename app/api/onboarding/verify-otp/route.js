@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import crypto from "crypto";
+
+import { authRateLimiter } from "@/lib/ratelimit";
+
+import { verifyCredOtpSchema } from "@/lib/zod";
 
 import connectDB from "@/config/database";
 import User from "@/models/User";
 
 export async function POST(request) {
-  const { otp } = await request.json();
+  const { otp } = verifyCredOtpSchema.parse(await request.json());
 
   if (!otp || otp.length !== 6) {
-    return NextResponse.json({ error: "Please enter a 6-digit code" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Please enter a 6-digit code" },
+      { status: 400 },
+    );
   }
 
   const cookieStore = await cookies();
@@ -19,6 +26,26 @@ export async function POST(request) {
     return NextResponse.json(
       { error: "Session expired. Please sign up again." },
       { status: 401 },
+    );
+  }
+
+  // Rate limit by IP
+  const headersList = await headers();
+  const ip = headersList.get("x-forwarded-for") ?? "anonymous";
+  const ipLimit = await authRateLimiter.limit(`verify-otp:ip:${ip}`);
+  if (!ipLimit.success) {
+    return NextResponse.json(
+      { error: "Too many requests from this IP. Try again later." },
+      { status: 429 },
+    );
+  }
+
+  // Rate limit by email
+  const emailLimit = await authRateLimiter.limit(`verify-otp:${email}`);
+  if (!emailLimit.success) {
+    return NextResponse.json(
+      { error: "Too many attempts for this email. Try again later." },
+      { status: 429 },
     );
   }
 

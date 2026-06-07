@@ -1,21 +1,15 @@
 import mongoose from "mongoose";
 
-let connected = false;
+let cached = global._mongoose;
+if (!cached) cached = global._mongoose = { conn: null, promise: null };
 
-const connectDB = async () => {
-  mongoose.set("strictQuery", true);
-
-  if (connected) {
-    console.log("MongoDB Contracty Database is connected successfully!");
+export default async function connectDB() {
+  if (cached.conn) return cached.conn;
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
+      bufferCommands: false,
+    });
   }
-
-  //Connect to MongoDB
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    connected = true;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export default connectDB;
+  cached.conn = await cached.promise;
+  return cached.conn;
+}

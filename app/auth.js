@@ -16,12 +16,13 @@ import { MongoDBAdapter } from "@auth/mongodb-adapter";
 
 import { authRateLimiter } from "@/lib/ratelimit";
 
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 
 import { RateLimitError } from "@/lib/error";
 
 const DEFAULT_IMAGE =
-  "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
+  "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png" ||
+  "/images/default-image.png";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
@@ -61,7 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         await connectDB();
 
-        // Post-OTP sign-in via one-time token
+        // Onboarding path: token passed explicitly in credentials body (email verification flow)
         if (credentials.signInToken) {
           const user = await User.findOneAndUpdate(
             {
@@ -73,7 +74,53 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             { new: true },
           );
 
-          if (!user) throw new Error("Invalid or expired sign-in token");
+          if (!user) {
+            // Clear any stale token to close the race window
+            await User.updateOne(
+              { email: credentials.email },
+              { $unset: { signInToken: "", signInTokenExpiry: "" } },
+            );
+            throw new Error("Invalid or expired sign-in token");
+          }
+
+          return {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            image: user.image || DEFAULT_IMAGE,
+            role: user.role,
+            needsOnboarding: user.needsOnboarding,
+          };
+        }
+
+        // Sign-in OTP path: token is in an httpOnly cookie, never in the request body
+        if (!credentials.password) {
+          const cookieStore = await cookies();
+          const signInToken = cookieStore.get("signin_token")?.value ?? null;
+          const email = credentials.email;
+
+          if (!signInToken) {
+            throw new Error("Invalid or expired sign-in token");
+          }
+
+          const user = await User.findOneAndUpdate(
+            {
+              email,
+              signInToken,
+              signInTokenExpiry: { $gt: new Date() },
+            },
+            { $unset: { signInToken: "", signInTokenExpiry: "" } },
+            { new: true },
+          );
+
+          if (!user) {
+            // Token wrong or expired — clear it to prevent brute-force race
+            await User.updateOne(
+              { email },
+              { $unset: { signInToken: "", signInTokenExpiry: "" } },
+            );
+            throw new Error("Invalid or expired sign-in token");
+          }
 
           return {
             id: user._id.toString(),

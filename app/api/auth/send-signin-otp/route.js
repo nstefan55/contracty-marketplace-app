@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import React from "react";
+import { z } from "zod";
 
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { resend } from "@/config/resend";
 import SignInOTP from "@/emails/SignInOTP";
 
+const verifyEmail = z.object({ email: z.string().email() });
+
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 export async function POST(request) {
-  const { email } = await request.json();
+  const { email } = verifyEmail.parse(await request.json());
 
   if (!email) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
@@ -38,7 +41,7 @@ export async function POST(request) {
   const otp = generateOTP();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  await User.updateOne({ email }, { otp, otpExpiry });
+  await User.updateOne({ email }, { otp, otpExpiry, otpAttempts: 0 });
 
   if (process.env.NODE_ENV === "development")
     console.log(`[OTP] ${email} → ${otp}`);

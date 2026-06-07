@@ -41,7 +41,7 @@ export async function POST() {
   const otp = generateOTP();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  await User.updateOne({ email }, { otp, otpExpiry });
+  await User.updateOne({ email }, { otp, otpExpiry, otpAttempts: 0 });
 
   if (process.env.NODE_ENV === "development")
     console.log(`[OTP] ${email} → ${otp}`);

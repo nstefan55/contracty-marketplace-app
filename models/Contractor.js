@@ -12,7 +12,8 @@ const contractorSchema = new Schema(
     profileImage: {
       type: String,
       default:
-        "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
+        "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png" ||
+        "/images/default-image.png",
     },
     trade: {
       type: String,

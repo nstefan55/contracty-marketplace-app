@@ -14,7 +14,7 @@ const userSchema = new Schema(
     },
     image: {
       type: String,
-      default: DEFAULT_PROFILE_IMAGE_URL,
+      default: DEFAULT_PROFILE_IMAGE_URL || "/images/default-image.png",
     },
     password: {
       type: String,
@@ -48,6 +48,10 @@ const userSchema = new Schema(
     signInTokenExpiry: {
       type: Date,
       default: null,
+    },
+    otpAttempts: {
+      type: Number,
+      default: 0,
     },
     bookmarks: [
       {

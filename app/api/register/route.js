@@ -3,9 +3,10 @@ import { cookies } from "next/headers";
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { saltAndHashPassword } from "@/lib/password";
+import { registerSchema } from "@/lib/zod";
 
 export async function POST(request) {
-  const { name, email, password } = await request.json();
+  const { name, email, password } = registerSchema.parse(await request.json());
 
   if (!email || !password) {
     return NextResponse.json(

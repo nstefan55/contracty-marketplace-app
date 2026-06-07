@@ -58,10 +58,11 @@ export default function SignInVerifyPage() {
     if (!res.ok) {
       setLoading(false);
       setError(data.error);
+      if (data.lockout) setDigits(["", "", "", "", "", ""]);
       return;
     }
 
-    const result = await signInWithOTP(data.email, data.signInToken);
+    const result = await signInWithOTP(data.email);
     if (result?.error) {
       setLoading(false);
       setError(result.error);

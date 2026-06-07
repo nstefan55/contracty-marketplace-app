@@ -12,6 +12,10 @@
 
 # testing
 /coverage
+/.jest-cache
+/__tests__/__snapshots__/*.snap.local
+junit.xml
+test-report.html
 
 # next.js
 /.next/
@@ -32,6 +36,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# but DO allow the committed test-env template; real test secrets go in .env.test.local
+!.env.test
+.env.test.local
+.env.*.local
 
 # vercel
 .vercel

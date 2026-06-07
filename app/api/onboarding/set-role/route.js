@@ -8,14 +8,14 @@ import { auth } from "@/app/auth";
 
 import { roleSchema } from "@/lib/zod";
 
+import crypto from "crypto";
+
 function generateOTP() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 export async function POST(request) {
-  const { role } = await roleSchema.parse(await request.json());
-
-  let otp;
+  const { role } = roleSchema.parse(await request.json());
 
   await connectDB();
 
@@ -32,8 +32,13 @@ export async function POST(request) {
   }
 
   const user = await User.findOne({ email });
+
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  if (!session?.user && !user?.needsOnboarding) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // Google user: save role and mark onboarding complete, no OTP needed
@@ -53,12 +58,12 @@ export async function POST(request) {
   }
 
   // Credentials user: save role and send OTP
-  otp = generateOTP();
+  const otp = generateOTP();
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
   await User.updateOne({ email }, { role, otp, otpExpiry });
 
-  if (process.env.NODE_ENV !== "development")
+  if (process.env.NODE_ENV === "development")
     console.log(`[OTP] ${email} → ${otp}`);
 
   await resend.emails.send({

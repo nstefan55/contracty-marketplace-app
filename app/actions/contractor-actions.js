@@ -1,4 +1,5 @@
 "use server";
+import { z } from "zod";
 import { auth } from "@/app/auth";
 import { revalidatePath } from "next/cache";
 import connectDB from "@/config/database";
@@ -7,12 +8,61 @@ import Portfolio from "@/models/Portfolio";
 import User from "@/models/User";
 import { verifyPassword, saltAndHashPassword } from "@/lib/password";
 import Inquiry from "@/models/Inquiry";
+import { checkActionRateLimit } from "@/lib/action-ratelimit";
+
+const TRADES = [
+  "General Contractor","Electrician","Plumber","HVAC Technician","Handyman",
+  "Roofer","Landscaper","Mason","Carpenter","Concrete & Paving","Painter",
+  "Tiler","Flooring Specialist","Window & Door Specialist",
+];
+
+const inquirySchema = z.object({
+  projectType: z.string().min(1).max(100),
+  budget: z.string().max(100).optional(),
+  timeline: z.string().max(100).optional(),
+  siteAddress: z.string().max(200).optional(),
+  description: z.string().min(1).max(1000),
+});
+
+const contractorProfileSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  bio: z.string().max(1000).optional(),
+  phone: z.string().max(30).optional(),
+  email: z.string().email().max(100).optional(),
+  trade: z.enum(TRADES).optional(),
+  yearsExperience: z.number().int().min(0).max(60).optional(),
+  certifications: z.array(z.string().max(100)).max(20).optional(),
+});
+
+const portfolioItemSchema = z.object({
+  title: z.string().min(1).max(150),
+  description: z.string().max(1000).optional(),
+  images: z.array(z.string().url()).max(20).optional(),
+  projectType: z.string().max(100).optional(),
+  location: z.string().max(200).optional(),
+  completedAt: z.string().datetime({ offset: true }).optional(),
+});
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(12, "New password must be at least 12 characters"),
+});
 
 export async function createInquiry(contractorSlug, formData) {
-  await connectDB();
-
   const session = await auth();
   if (!session) throw new Error("You must be signed in to send an inquiry");
+
+  await checkActionRateLimit(`inquiry-${session.user.id}`);
+
+  const data = inquirySchema.parse({
+    projectType: formData.projectType,
+    budget: formData.budget,
+    timeline: formData.timeline,
+    siteAddress: formData.siteAddress,
+    description: formData.description,
+  });
+
+  await connectDB();
 
   const contractor = await Contractor.findOne({ slug: contractorSlug });
   if (!contractor) throw new Error("Contractor not found");
@@ -21,21 +71,19 @@ export async function createInquiry(contractorSlug, formData) {
     sender: session.user.id,
     recipient: contractor.owner,
     contractor: contractor._id,
-    projectType: formData.projectType,
-    budget: formData.budget,
-    timeline: formData.timeline,
-    siteAddress: formData.siteAddress,
-    description: formData.description,
+    ...data,
   });
 
   revalidatePath(`/${contractorSlug}/dashboard`);
 }
 
 export async function toggleBookmark(contractorId) {
-  await connectDB();
-
   const session = await auth();
   if (!session) throw new Error("Sign in to bookmark contractors");
+
+  await checkActionRateLimit(`bookmark-${session.user.id}`);
+
+  await connectDB();
 
   const user = await User.findById(session.user.id);
   if (!user) throw new Error("User not found");
@@ -114,18 +162,29 @@ async function getAuthenticatedContractor(slug) {
 }
 
 export async function updateContractorProfile(slug, formData) {
-  const { contractor } = await getAuthenticatedContractor(slug);
+  const { session, contractor } = await getAuthenticatedContractor(slug);
 
-  contractor.name = formData.name || contractor.name;
-  contractor.bio = formData.bio ?? contractor.bio;
-  contractor.phone = formData.phone ?? contractor.phone;
-  contractor.email = formData.email ?? contractor.email;
-  contractor.trade = formData.trade || contractor.trade;
-  contractor.yearsExperience = formData.yearsExperience
-    ? Number(formData.yearsExperience)
-    : contractor.yearsExperience;
-  contractor.certifications =
-    formData.certifications ?? contractor.certifications;
+  await checkActionRateLimit(`update-profile-${session.user.id}`);
+
+  const data = contractorProfileSchema.parse({
+    name: formData.name,
+    bio: formData.bio,
+    phone: formData.phone,
+    email: formData.email,
+    trade: formData.trade,
+    yearsExperience: formData.yearsExperience
+      ? Number(formData.yearsExperience)
+      : undefined,
+    certifications: formData.certifications,
+  });
+
+  if (data.name !== undefined) contractor.name = data.name;
+  if (data.bio !== undefined) contractor.bio = data.bio;
+  if (data.phone !== undefined) contractor.phone = data.phone;
+  if (data.email !== undefined) contractor.email = data.email;
+  if (data.trade !== undefined) contractor.trade = data.trade;
+  if (data.yearsExperience !== undefined) contractor.yearsExperience = data.yearsExperience;
+  if (data.certifications !== undefined) contractor.certifications = data.certifications;
 
   await contractor.save();
   revalidatePath(`/${slug}/dashboard`);
@@ -135,18 +194,23 @@ export async function updateContractorProfile(slug, formData) {
 }
 
 export async function addPortfolioItem(slug, formData) {
-  const { contractor } = await getAuthenticatedContractor(slug);
+  const { session, contractor } = await getAuthenticatedContractor(slug);
+
+  await checkActionRateLimit(`portfolio-${session.user.id}`);
+
+  const data = portfolioItemSchema.parse({
+    title: formData.title,
+    description: formData.description,
+    images: formData.images,
+    projectType: formData.projectType,
+    location: formData.location,
+    completedAt: formData.completedAt,
+  });
 
   await Portfolio.create({
     contractor: contractor._id,
-    title: formData.title,
-    description: formData.description,
-    images: formData.images || [],
-    projectType: formData.projectType,
-    location: formData.location,
-    completedAt: formData.completedAt
-      ? new Date(formData.completedAt)
-      : undefined,
+    ...data,
+    completedAt: data.completedAt ? new Date(data.completedAt) : undefined,
   });
 
   revalidatePath(`/${slug}/dashboard/portfolio`);
@@ -179,6 +243,13 @@ export async function changePassword(currentPassword, newPassword) {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
 
+  await checkActionRateLimit(`change-password-${session.user.id}`);
+
+  const { newPassword: validatedNew } = changePasswordSchema.parse({
+    currentPassword,
+    newPassword,
+  });
+
   await connectDB();
   const user = await User.findById(session.user.id);
   if (!user || !user.password)
@@ -187,17 +258,29 @@ export async function changePassword(currentPassword, newPassword) {
   const valid = await verifyPassword(currentPassword, user.password);
   if (!valid) throw new Error("Current password is incorrect");
 
-  user.password = await saltAndHashPassword(newPassword);
+  user.password = await saltAndHashPassword(validatedNew);
   await user.save();
 
   return { success: true };
 }
 
-export async function deleteAccount() {
+export async function deleteAccount(confirmPassword) {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
 
+  await checkActionRateLimit(`delete-account-${session.user.id}`);
+
   await connectDB();
+
+  const user = await User.findById(session.user.id);
+  if (!user) throw new Error("User not found");
+
+  // Re-verify password before destructive operation
+  if (user.password) {
+    if (!confirmPassword) throw new Error("Password confirmation is required");
+    const valid = await verifyPassword(confirmPassword, user.password);
+    if (!valid) throw new Error("Incorrect password");
+  }
 
   if (session.user.role === "contractor") {
     const contractor = await Contractor.findOne({ owner: session.user.id });

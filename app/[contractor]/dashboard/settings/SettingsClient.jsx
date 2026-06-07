@@ -63,8 +63,8 @@ function PasswordSection() {
       toast.error("New passwords do not match");
       return;
     }
-    if (form.next.length < 8) {
-      toast.error("Password must be at least 8 characters");
+    if (form.next.length < 12) {
+      toast.error("Password must be at least 12 characters");
       return;
     }
     setLoading(true);
@@ -118,14 +118,24 @@ function PasswordSection() {
   );
 }
 
-function DangerZone() {
+function DangerZone({ hasPassword }) {
   const [confirming, setConfirming] = useState(false);
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function handleCancel() {
+    setConfirming(false);
+    setPassword("");
+  }
+
   async function handleDelete() {
+    if (hasPassword && !password) {
+      toast.error("Enter your password to confirm deletion");
+      return;
+    }
     setLoading(true);
     try {
-      await deleteAccount();
+      await deleteAccount(hasPassword ? password : undefined);
       await signOut({ callbackUrl: "/" });
     } catch (err) {
       toast.error(err.message ?? "Failed to delete account");
@@ -143,18 +153,33 @@ function DangerZone() {
           Delete Account
         </Button>
       ) : (
-        <div className="flex gap-2">
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            {loading ? "Deleting…" : "Yes, delete my account"}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setConfirming(false)}>
-            Cancel
-          </Button>
+        <div className="space-y-3">
+          {hasPassword && (
+            <div className="space-y-1.5">
+              <Label htmlFor="delete-confirm-password">Enter your password to confirm</Label>
+              <Input
+                id="delete-confirm-password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Your current password"
+                autoComplete="current-password"
+              />
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? "Deleting…" : "Yes, delete my account"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleCancel}>
+              Cancel
+            </Button>
+          </div>
         </div>
       )}
     </div>
@@ -190,7 +215,7 @@ export default function SettingsClient({ slug, available, hasPassword }) {
         </CardHeader>
         <Separator className="mb-4" />
         <CardContent>
-          <DangerZone />
+          <DangerZone hasPassword={hasPassword} />
         </CardContent>
       </Card>
     </div>
