@@ -1,569 +1,379 @@
+import "dotenv/config";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+import bcrypt from "bcryptjs";
 
-dotenv.config({
-  path: resolve(dirname(fileURLToPath(import.meta.url)), "../.env"),
-});
+const { Schema, model, models } = mongoose;
 
-const MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) throw new Error("MONGODB_URI not set in .env");
+// ─── Inline schemas (avoids path-alias issues in script context) ─────────────
 
-const OWNER_IDS = [
-  new mongoose.Types.ObjectId("6650000000000000000000a1"),
-  new mongoose.Types.ObjectId("6650000000000000000000a2"),
-  new mongoose.Types.ObjectId("6650000000000000000000a3"),
-  new mongoose.Types.ObjectId("6650000000000000000000a4"),
-  new mongoose.Types.ObjectId("6650000000000000000000a5"),
-  new mongoose.Types.ObjectId("6650000000000000000000a6"),
-  new mongoose.Types.ObjectId("6650000000000000000000a7"),
-  new mongoose.Types.ObjectId("6650000000000000000000a8"),
-];
+const userSchema = new Schema(
+  {
+    name: String,
+    email: { type: String, unique: true, required: true },
+    image: { type: String },
+    password: { type: String, default: null },
+    role: { type: String, enum: ["homeowner", "contractor", "admin", null], default: null },
+    emailVerified: { type: Date, default: null },
+    needsOnboarding: { type: Boolean, default: false },
+    otp: { type: String, default: null },
+    otpExpiry: { type: Date, default: null },
+    signInToken: { type: String, default: null },
+    signInTokenExpiry: { type: Date, default: null },
+    otpAttempts: { type: Number, default: 0 },
+    bookmarks: [{ type: Schema.Types.ObjectId, ref: "Contractor" }],
+  },
+  { timestamps: true },
+);
 
-const CONTRACTOR_IDS = [
-  new mongoose.Types.ObjectId("6650000000000000000000b1"),
-  new mongoose.Types.ObjectId("6650000000000000000000b2"),
-  new mongoose.Types.ObjectId("6650000000000000000000b3"),
-  new mongoose.Types.ObjectId("6650000000000000000000b4"),
-  new mongoose.Types.ObjectId("6650000000000000000000b5"),
-  new mongoose.Types.ObjectId("6650000000000000000000b6"),
-  new mongoose.Types.ObjectId("6650000000000000000000b7"),
-  new mongoose.Types.ObjectId("6650000000000000000000b8"),
-];
-
-// ---------------------------------------------------------------------------
-// Users (contractor accounts that own each profile)
-// ---------------------------------------------------------------------------
-export const mockUsers = [
+const contractorSchema = new Schema(
   {
-    _id: OWNER_IDS[0],
-    name: "Marko Horvat",
-    email: "marko.horvat@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836754/profile-1_lnyaxc.jpg",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-01-15"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[1],
-    name: "Ivan Perić",
-    email: "ivan.peric@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836755/profile-2_g6edtm.jpg",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-02-10"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[2],
-    name: "Tomislav Voda",
-    email: "tomislav.voda@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-01-20"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[3],
-    name: "Josip Klima",
-    email: "josip.klima@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-03-05"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[4],
-    name: "Ante Majstor",
-    email: "ante.majstor@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-04-01"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[5],
-    name: "Matija Krovišta",
-    email: "matija.krov@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-02-28"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[6],
-    name: "Nikola Zeleni",
-    email: "nikola.zeleni@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836755/profile-3_cbwr92.jpg",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-05-12"),
-    needsOnboarding: false,
-  },
-  {
-    _id: OWNER_IDS[7],
-    name: "Stjepan Podovi",
-    email: "stjepan.podovi@example.com",
-    image: "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png",
-    password: null,
-    role: "contractor",
-    emailVerified: new Date("2024-03-18"),
-    needsOnboarding: false,
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Contractor profiles
-// ---------------------------------------------------------------------------
-export const mockContractors = [
-  {
-    _id: CONTRACTOR_IDS[0],
-    owner: OWNER_IDS[0],
-    name: "Marko Horvat",
-    slug: "marko-horvat-general-contractor",
-    profileImage: "https://res.cloudinary.com/devslulj5/image/upload/v1777836754/profile-1_lnyaxc.jpg",
-    trade: "General Contractor",
-    bio: "Full-service general contractor with 18 years of experience across residential and commercial builds. Known for transparent pricing and on-time delivery. Managed projects from €20k bathroom renovations to €500k new builds.",
-    phone: "+385 91 234 5678",
-    email: "marko.horvat@example.com",
+    owner: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    profileImage: { type: String },
+    trade: { type: String, required: true },
+    bio: String,
+    phone: String,
+    email: String,
     serviceArea: {
-      lat: 45.815,
-      lng: 15.982,
-      radiusKm: 40,
-      address: "Zagreb, Croatia",
-      postcode: "10000",
+      lat: Number, lng: Number,
+      radiusKm: { type: Number, default: 20 },
+      address: String, postcode: String,
     },
-    certifications: ["ISO 9001", "HGK Certified Contractor", "OSHA Safety"],
+    certifications: [String],
     priceRange: {
-      hourly: { min: 35, max: 60 },
-      project: { min: 5000, max: 500000 },
-      currency: "EUR",
+      hourly: { min: Number, max: Number },
+      project: { min: Number, max: Number },
+      currency: { type: String, default: "EUR" },
     },
-    yearsExperience: 18,
-    available: true,
-    featured: true,
-    verified: true,
-    averageRating: 3.5,
-    reviewCount: 34,
-    viewCount: 412,
+    yearsExperience: Number,
+    available: { type: Boolean, default: true },
+    featured: { type: Boolean, default: false },
+    verified: { type: Boolean, default: false },
+    averageRating: { type: Number, default: 0 },
+    reviewCount: { type: Number, default: 0 },
+    viewCount: { type: Number, default: 0 },
   },
-  {
-    _id: CONTRACTOR_IDS[1],
-    owner: OWNER_IDS[1],
-    name: "Ivan Perić Elektro",
-    slug: "ivan-peric-electrician",
-    profileImage: "https://res.cloudinary.com/devslulj5/image/upload/v1777836755/profile-2_g6edtm.jpg",
-    trade: "Electrician",
-    bio: "Licensed electrician specialising in smart home installations, fuse board upgrades, and EV charger fitting. Available for both emergency callouts and planned projects across Split and Dalmatia.",
-    phone: "+385 98 765 4321",
-    email: "ivan.peric@example.com",
-    serviceArea: {
-      lat: 43.508,
-      lng: 16.44,
-      radiusKm: 30,
-      address: "Split, Croatia",
-      postcode: "21000",
-    },
-    certifications: ["HEP Licensed Electrician", "NICEIC Approved", "KNX Partner"],
-    priceRange: {
-      hourly: { min: 30, max: 55 },
-      project: { min: 200, max: 50000 },
-      currency: "EUR",
-    },
-    yearsExperience: 12,
-    available: true,
-    featured: true,
-    verified: true,
-    averageRating: 4.2,
-    reviewCount: 51,
-    viewCount: 638,
-  },
-  {
-    _id: CONTRACTOR_IDS[2],
-    owner: OWNER_IDS[2],
-    name: "Tomislav Voda d.o.o.",
-    slug: "tomislav-voda-plumber",
-    trade: "Plumber",
-    bio: "Family plumbing business since 1998. Bathroom installations, boiler replacements, leak detection, and underfloor heating. We carry our own parts van so most jobs are done in a single visit.",
-    phone: "+385 92 111 2222",
-    email: "tomislav.voda@example.com",
-    serviceArea: {
-      lat: 45.327,
-      lng: 14.442,
-      radiusKm: 25,
-      address: "Rijeka, Croatia",
-      postcode: "51000",
-    },
-    certifications: ["Licensed Plumber – Croatia", "Viessmann Certified Installer"],
-    priceRange: {
-      hourly: { min: 28, max: 50 },
-      project: { min: 300, max: 30000 },
-      currency: "EUR",
-    },
-    yearsExperience: 26,
-    available: true,
-    featured: false,
-    verified: true,
-    averageRating: 4.7,
-    reviewCount: 29,
-    viewCount: 221,
-  },
-  {
-    _id: CONTRACTOR_IDS[3],
-    owner: OWNER_IDS[3],
-    name: "Klimatika Josip",
-    slug: "klimatika-josip-hvac",
-    trade: "HVAC Technician",
-    bio: "Air conditioning installation, servicing, and repair. Also handle heat pumps and ventilation systems for residential and small commercial clients. Mitsubishi and Daikin authorised installer.",
-    phone: "+385 95 333 4444",
-    email: "josip.klima@example.com",
-    serviceArea: {
-      lat: 45.555,
-      lng: 18.695,
-      radiusKm: 50,
-      address: "Osijek, Croatia",
-      postcode: "31000",
-    },
-    certifications: ["F-Gas Certified", "Mitsubishi Diamond Partner", "Daikin D1 Partner"],
-    priceRange: {
-      hourly: { min: 32, max: 58 },
-      project: { min: 800, max: 80000 },
-      currency: "EUR",
-    },
-    yearsExperience: 14,
-    available: false,
-    featured: false,
-    verified: true,
-    averageRating: 4.6,
-    reviewCount: 22,
-    viewCount: 189,
-  },
-  {
-    _id: CONTRACTOR_IDS[4],
-    owner: OWNER_IDS[4],
-    name: "Ante Majstor",
-    slug: "ante-majstor-handyman",
-    trade: "Handyman",
-    bio: "No job too small. Flat-pack assembly, TV mounting, door hanging, tiling, patching, painting — if it needs fixing around the house, I do it. Quick response, honest pricing, no call-out fee.",
-    phone: "+385 99 555 6666",
-    email: "ante.majstor@example.com",
-    serviceArea: {
-      lat: 43.508,
-      lng: 16.44,
-      radiusKm: 15,
-      address: "Split, Croatia",
-      postcode: "21000",
-    },
-    certifications: [],
-    priceRange: {
-      hourly: { min: 20, max: 35 },
-      project: { min: 50, max: 5000 },
-      currency: "EUR",
-    },
-    yearsExperience: 8,
-    available: true,
-    featured: false,
-    verified: false,
-    averageRating: 4.5,
-    reviewCount: 17,
-    viewCount: 143,
-  },
-  {
-    _id: CONTRACTOR_IDS[5],
-    owner: OWNER_IDS[5],
-    name: "Krovišta Matija",
-    slug: "krovista-matija-roofer",
-    trade: "Roofer",
-    bio: "Full roofing services: new roofs, re-roofing, repairs, guttering, and flat roof waterproofing. Work on pitched tile roofs and modern flat roofs with EPDM or TPO membranes.",
-    phone: "+385 91 777 8888",
-    email: "matija.krov@example.com",
-    serviceArea: {
-      lat: 45.815,
-      lng: 15.982,
-      radiusKm: 60,
-      address: "Zagreb, Croatia",
-      postcode: "10000",
-    },
-    certifications: ["IKO Certified Installer", "Bramac Partner", "HGK Member"],
-    priceRange: {
-      hourly: { min: 30, max: 55 },
-      project: { min: 2000, max: 150000 },
-      currency: "EUR",
-    },
-    yearsExperience: 21,
-    available: true,
-    featured: false,
-    verified: true,
-    averageRating: 4.7,
-    reviewCount: 19,
-    viewCount: 267,
-  },
-  {
-    _id: CONTRACTOR_IDS[6],
-    owner: OWNER_IDS[6],
-    name: "Green Space – Nikola Zeleni",
-    slug: "green-space-nikola-zeleni-landscaper",
-    profileImage: "https://res.cloudinary.com/devslulj5/image/upload/v1777836755/profile-3_cbwr92.jpg",
-    trade: "Landscaper",
-    bio: "Garden design, landscaping, and maintenance. From complete garden transformations to regular lawn care. Also install irrigation systems and outdoor lighting. Portfolio includes private gardens, hotel grounds, and public spaces.",
-    phone: "+385 98 999 0000",
-    email: "nikola.zeleni@example.com",
-    serviceArea: {
-      lat: 45.327,
-      lng: 14.442,
-      radiusKm: 35,
-      address: "Rijeka, Croatia",
-      postcode: "51000",
-    },
-    certifications: ["RHS Level 3 Horticulture", "Rainbird Certified Irrigation Installer"],
-    priceRange: {
-      hourly: { min: 25, max: 45 },
-      project: { min: 500, max: 60000 },
-      currency: "EUR",
-    },
-    yearsExperience: 10,
-    available: true,
-    featured: true,
-    verified: true,
-    averageRating: 4.8,
-    reviewCount: 28,
-    viewCount: 354,
-  },
-  {
-    _id: CONTRACTOR_IDS[7],
-    owner: OWNER_IDS[7],
-    name: "Podovi Stjepan",
-    slug: "podovi-stjepan-flooring",
-    trade: "Flooring Specialist",
-    bio: "Hardwood, engineered, LVT, and laminate flooring supply and installation. Also handle sanding and refinishing of existing hardwood floors. 15 years fitting floors in Zagreb and surroundings.",
-    phone: "+385 91 456 7890",
-    email: "stjepan.podovi@example.com",
-    serviceArea: {
-      lat: 45.815,
-      lng: 15.982,
-      radiusKm: 30,
-      address: "Zagreb, Croatia",
-      postcode: "10000",
-    },
-    certifications: ["Kahrs Certified Installer", "Bona Certified Craftsman"],
-    priceRange: {
-      hourly: { min: 25, max: 45 },
-      project: { min: 800, max: 40000 },
-      currency: "EUR",
-    },
-    yearsExperience: 15,
-    available: true,
-    featured: false,
-    verified: true,
-    averageRating: 4.8,
-    reviewCount: 41,
-    viewCount: 298,
-  },
-];
+  { timestamps: true },
+);
 
-// ---------------------------------------------------------------------------
-// Portfolio items
-// ---------------------------------------------------------------------------
-export const mockPortfolioItems = [
-  // Marko Horvat – General Contractor
-  {
-    contractor: CONTRACTOR_IDS[0],
-    title: "Full Home Renovation – Maksimir",
-    description: "Complete gut renovation of a 120m² apartment. New electrical, plumbing, flooring, and kitchen.",
-    images: ["https://res.cloudinary.com/devslulj5/image/upload/v1777746805/maksimir-stan_pcswb2.jpg"],
-    projectType: "Renovation",
-    location: { city: "Zagreb", state: "Zagreb County", zipcode: "10000" },
-    completedAt: new Date("2024-11-01"),
-  },
-  {
-    contractor: CONTRACTOR_IDS[0],
-    title: "New Build – Sesvete",
-    description: "250m² family house construction from foundation to handover.",
-    images: ["https://res.cloudinary.com/devslulj5/image/upload/v1777746810/sevete-novi-stan_jrgpeg.jpg"],
-    projectType: "New Build",
-    location: { city: "Sesvete", state: "Zagreb County", zipcode: "10360" },
-    completedAt: new Date("2024-06-15"),
-  },
-  // Ivan Perić – Electrician
-  {
-    contractor: CONTRACTOR_IDS[1],
-    title: "Smart Home Wiring – Split 3",
-    description: "Full rewire of a 90m² apartment with KNX smart home system, motorised blinds, and multi-room audio.",
-    images: ["https://res.cloudinary.com/devslulj5/image/upload/v1777746811/smart-room-split_akcfrd.jpg"],
-    projectType: "Smart Home",
-    location: { city: "Split", state: "Split-Dalmatia County", zipcode: "21000" },
-    completedAt: new Date("2025-01-20"),
-  },
-  {
-    contractor: CONTRACTOR_IDS[1],
-    title: "EV Charger Installation × 12",
-    description: "Installed 12 Type 2 wallbox chargers in a residential underground garage.",
-    images: ["https://res.cloudinary.com/devslulj5/image/upload/v1777746814/ev-charger-install_rvwv2j.jpg"],
-    projectType: "EV Infrastructure",
-    location: { city: "Split", state: "Split-Dalmatia County", zipcode: "21000" },
-    completedAt: new Date("2024-09-10"),
-  },
-  // Tomislav Voda – Plumber
-  {
-    contractor: CONTRACTOR_IDS[2],
-    title: "Bathroom Renovation – Kantrida",
-    description: "Full bathroom strip-out and rebuild. Freestanding bath, walk-in shower, heated towel rail, and underfloor heating.",
-    images: ["https://res.cloudinary.com/devslulj5/image/upload/v1777746813/bathroom_renovation_dh4ep9.jpg"],
-    projectType: "Bathroom",
-    location: { city: "Rijeka", state: "Primorje-Gorski Kotar County", zipcode: "51000" },
-    completedAt: new Date("2025-02-14"),
-  },
-  // Klimatika Josip – HVAC
-  {
-    contractor: CONTRACTOR_IDS[3],
-    title: "Multi-Split AC – Office Block",
-    description: "Design and installation of 8-zone VRF system for a 600m² office building.",
-    images: ["https://res.cloudinary.com/devslulj5/image/upload/v1777746803/hvac_oq65f0.jpg"],
-    projectType: "Commercial HVAC",
-    location: { city: "Osijek", state: "Osijek-Baranja County", zipcode: "31000" },
-    completedAt: new Date("2024-08-30"),
-  },
-  {
-    contractor: CONTRACTOR_IDS[3],
-    title: "Heat Pump – Detached House",
-    description: "Air-to-water heat pump installation replacing an old oil boiler, including underfloor heating manifold.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746802/heatpump-2_hvjl8a.avif",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746801/heatpump-1_ylrjnj.jpg",
-    ],
-    projectType: "Heat Pump",
-    location: { city: "Đakovo", state: "Osijek-Baranja County", zipcode: "31400" },
-    completedAt: new Date("2025-01-05"),
-  },
-  // Ante Majstor – Handyman
-  {
-    contractor: CONTRACTOR_IDS[4],
-    title: "Outdoor Decking – Žnjan",
-    description: "Built a 24m² composite decking area with built-in planters and outdoor lighting.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746805/outdoordeck-1_fg0fpn.jpg",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746806/outdoordeck-2_q85cza.jpg",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746807/outdoordeck-3_m6sp4r.jpg",
-    ],
-    projectType: "Outdoor",
-    location: { city: "Split", state: "Split-Dalmatia County", zipcode: "21000" },
-    completedAt: new Date("2024-07-22"),
-  },
-  // Krovišta Matija – Roofer
-  {
-    contractor: CONTRACTOR_IDS[5],
-    title: "Full Re-Roof – Samobor",
-    description: "Stripped and re-laid 280m² clay tile roof on a 1970s family home. New battens, membrane, and ridge tiles.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746807/reroof-1_igmecf.webp",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746808/reroof-2_vdgzjr.webp",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746809/reroof-3_vypgrt.jpg",
-    ],
-    projectType: "Re-Roof",
-    location: { city: "Samobor", state: "Zagreb County", zipcode: "10430" },
-    completedAt: new Date("2024-10-05"),
-  },
-  {
-    contractor: CONTRACTOR_IDS[5],
-    title: "Flat Roof – Commercial Unit",
-    description: "400m² EPDM flat roof on a warehouse, including new drainage and insulation upgrade.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746797/flatroof-2_vg76gk.jpg",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746796/flatroof-1_zx64m5.jpg",
-    ],
-    projectType: "Flat Roof",
-    location: { city: "Velika Gorica", state: "Zagreb County", zipcode: "10410" },
-    completedAt: new Date("2024-05-18"),
-  },
-  // Green Space Nikola – Landscaper
-  {
-    contractor: CONTRACTOR_IDS[6],
-    title: "Garden Redesign – Opatija Villa",
-    description: "Full garden redesign for a 600m² coastal villa. Mediterranean planting scheme, stone terracing, and drip irrigation.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746798/garden-redesign-1_jirgpj.jpg",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746798/garden-redesign-2_k2sj1c.jpg",
-    ],
-    projectType: "Garden Design",
-    location: { city: "Opatija", state: "Primorje-Gorski Kotar County", zipcode: "51410" },
-    completedAt: new Date("2025-03-10"),
-  },
-  {
-    contractor: CONTRACTOR_IDS[6],
-    title: "Artificial Turf & Decking – Kostrena",
-    description: "Replaced a neglected garden with low-maintenance artificial lawn, composite decking, and raised planters.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746811/art-turf-1_xoq6ky.jpg",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746812/art-turf-2_ryxscc.jpg",
-    ],
-    projectType: "Garden Makeover",
-    location: { city: "Kostrena", state: "Primorje-Gorski Kotar County", zipcode: "51221" },
-    completedAt: new Date("2024-04-20"),
-  },
-  // Podovi Stjepan – Flooring
-  {
-    contractor: CONTRACTOR_IDS[7],
-    title: "Herringbone Oak – Gornji Grad Apartment",
-    description: "180m² of engineered oak in herringbone pattern. Underfloor heating compatible, matt lacquer finish.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746799/gornji-grad-parket-2_u0bjii.jpg",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746798/gornji-grad-parket-1_flqoyl.jpg",
-    ],
-    projectType: "Hardwood Flooring",
-    location: { city: "Zagreb", state: "Zagreb County", zipcode: "10000" },
-    completedAt: new Date("2025-02-28"),
-  },
-  {
-    contractor: CONTRACTOR_IDS[7],
-    title: "LVT Throughout – New Build",
-    description: "850m² of luxury vinyl tile in a 5-bedroom new build. Waterproof throughout including bathrooms.",
-    images: [
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746803/lvt-flooring-1_zy1peh.webp",
-      "https://res.cloudinary.com/devslulj5/image/upload/v1777746804/lvt-flooring-2_hik62q.webp",
-    ],
-    projectType: "LVT",
-    location: { city: "Zaprešić", state: "Zagreb County", zipcode: "10290" },
-    completedAt: new Date("2024-12-19"),
-  },
-];
+const User = models.User || model("User", userSchema);
+const Contractor = models.Contractor || model("Contractor", contractorSchema);
 
-// ---------------------------------------------------------------------------
-// Seed
-// ---------------------------------------------------------------------------
-async function seed() {
-  await mongoose.connect(MONGODB_URI);
-  console.log("Connected to MongoDB");
+// ─── Seed data ────────────────────────────────────────────────────────────────
 
-  const db = mongoose.connection.db;
-  const usersCol = db.collection("users");
-  const contractorsCol = db.collection("contractors");
-  const portfolioCol = db.collection("portfolios");
+const DEFAULT_IMAGE =
+  "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
 
-  // Clean up only the seeded documents so real user data is untouched
-  await usersCol.deleteMany({ _id: { $in: OWNER_IDS } });
-  await contractorsCol.deleteMany({ _id: { $in: CONTRACTOR_IDS } });
-  await portfolioCol.deleteMany({ contractor: { $in: CONTRACTOR_IDS } });
+const SEED_DOMAIN = "@contracty-seed.dev";
+const SEED_PASSWORD = "Seed@Contracty2025";
 
-  await usersCol.insertMany(mockUsers);
-  console.log(`Seeded ${mockUsers.length} users`);
-
-  await contractorsCol.insertMany(mockContractors);
-  console.log(`Seeded ${mockContractors.length} contractors`);
-
-  await portfolioCol.insertMany(mockPortfolioItems);
-  console.log(`Seeded ${mockPortfolioItems.length} portfolio items`);
-
-  await mongoose.disconnect();
-  console.log("Done.");
+function toSlug(name) {
+  return name.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().replace(/\s+/g, "-");
 }
 
-seed().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+const CONTRACTORS_DATA = [
+  {
+    name: "Marko Horvat", email: `marko.horvat${SEED_DOMAIN}`,
+    trade: "Electrician", city: "Zagreb", postcode: "10000",
+    lat: 45.815, lng: 15.9819, years: 12,
+    bio: "Licensed master electrician with 12 years of experience in residential and commercial electrical installations. Specialising in smart home systems and solar panel integration.",
+    certifications: ["Master Electrician License", "Smart Home Certified Installer", "Solar PV Installation Certificate"],
+    hourly: { min: 35, max: 55 }, project: { min: 500, max: 5000 },
+    available: true, featured: true, verified: true,
+  },
+  {
+    name: "Ivan Perić", email: `ivan.peric${SEED_DOMAIN}`,
+    trade: "Plumber", city: "Split", postcode: "21000",
+    lat: 43.5081, lng: 16.4402, years: 8,
+    bio: "Experienced plumber covering all aspects of plumbing from emergency repairs to full bathroom installations. Available 7 days a week for urgent call-outs.",
+    certifications: ["Licensed Plumber", "Gas Safe Registered"],
+    hourly: { min: 30, max: 50 }, project: { min: 400, max: 4000 },
+    available: true, featured: false, verified: true,
+  },
+  {
+    name: "Josip Kralj", email: `josip.kralj${SEED_DOMAIN}`,
+    trade: "General Contractor", city: "Rijeka", postcode: "51000",
+    lat: 45.3271, lng: 14.4422, years: 15,
+    bio: "Full-service general contractor managing projects from planning through completion. Residential extensions, renovations, and new builds. Quality guaranteed.",
+    certifications: ["Certified General Contractor", "ISO 9001 Quality Management", "Health & Safety Qualified"],
+    hourly: { min: 40, max: 65 }, project: { min: 2000, max: 80000 },
+    available: true, featured: true, verified: true,
+  },
+  {
+    name: "Stefan Weber", email: `stefan.weber${SEED_DOMAIN}`,
+    trade: "Carpenter", city: "Vienna", postcode: "1010",
+    lat: 48.2082, lng: 16.3738, years: 10,
+    bio: "Precision carpentry and custom woodworking. From fitted kitchens and wardrobes to structural timber framing. Handcrafted quality on every project.",
+    certifications: ["Master Carpenter Certificate", "Timber Frame Construction Specialist"],
+    hourly: { min: 38, max: 60 }, project: { min: 600, max: 15000 },
+    available: true, featured: false, verified: true,
+  },
+  {
+    name: "Ana Novak", email: `ana.novak${SEED_DOMAIN}`,
+    trade: "Painter", city: "Ljubljana", postcode: "1000",
+    lat: 46.0569, lng: 14.5058, years: 6,
+    bio: "Interior and exterior painting with meticulous surface preparation. Specialist in decorative finishes, faux effects, and colour consultation services.",
+    certifications: ["Professional Painter & Decorator", "Colour Consultant Certificate"],
+    hourly: { min: 25, max: 40 }, project: { min: 300, max: 6000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Tomislav Vidović", email: `tomislav.vidovic${SEED_DOMAIN}`,
+    trade: "Roofer", city: "Zagreb", postcode: "10000",
+    lat: 45.815, lng: 15.9819, years: 18,
+    bio: "Master roofer with 18 years of experience in all roofing systems — flat, pitched, green roofs, and solar-ready structures. Fully insured with 10-year workmanship guarantee.",
+    certifications: ["Master Roofer License", "Flat Roof Waterproofing Specialist", "Green Roof Installer"],
+    hourly: { min: 35, max: 55 }, project: { min: 1500, max: 30000 },
+    available: true, featured: true, verified: true,
+  },
+  {
+    name: "Luka Blažević", email: `luka.blazevic${SEED_DOMAIN}`,
+    trade: "HVAC Technician", city: "Osijek", postcode: "31000",
+    lat: 45.5511, lng: 18.6953, years: 9,
+    bio: "HVAC installation, service and repair. Air conditioning, heat pumps, underfloor heating systems. Energy-efficient solutions for homes and commercial premises.",
+    certifications: ["F-Gas Certified", "Heat Pump Installation Specialist", "Underfloor Heating Installer"],
+    hourly: { min: 35, max: 58 }, project: { min: 800, max: 12000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Maja Jurić", email: `maja.juric${SEED_DOMAIN}`,
+    trade: "Tiler", city: "Zadar", postcode: "23000",
+    lat: 44.1194, lng: 15.2313, years: 7,
+    bio: "Expert tiler specialising in large-format tiles, natural stone, and mosaic work. Bathrooms, kitchens, terraces, and pool surrounds. Clean, precise finishes every time.",
+    certifications: ["Certified Tile Installer", "Natural Stone Specialist"],
+    hourly: { min: 28, max: 45 }, project: { min: 400, max: 8000 },
+    available: true, featured: false, verified: true,
+  },
+  {
+    name: "Roberto Ferretti", email: `roberto.ferretti${SEED_DOMAIN}`,
+    trade: "Mason", city: "Trieste", postcode: "34121",
+    lat: 45.6495, lng: 13.7768, years: 14,
+    bio: "Stone masonry, brickwork, and restoration. Specialist in traditional stone techniques and façade repair. Works on heritage properties and new builds alike.",
+    certifications: ["Stone Masonry Certificate", "Heritage Building Restoration", "Structural Masonry Qualification"],
+    hourly: { min: 35, max: 52 }, project: { min: 700, max: 25000 },
+    available: false, featured: false, verified: true,
+  },
+  {
+    name: "Petra Šimunić", email: `petra.simunic${SEED_DOMAIN}`,
+    trade: "Landscaper", city: "Dubrovnik", postcode: "20000",
+    lat: 42.6507, lng: 18.0944, years: 5,
+    bio: "Full landscaping service — garden design, planting, irrigation, paving, and ongoing maintenance. Sustainable and drought-resistant planting a speciality.",
+    certifications: ["Landscape Design Diploma", "Irrigation Systems Certified"],
+    hourly: { min: 25, max: 40 }, project: { min: 500, max: 20000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Boris Knežević", email: `boris.knezevic${SEED_DOMAIN}`,
+    trade: "Concrete & Paving", city: "Zagreb", postcode: "10090",
+    lat: 45.82, lng: 16.02, years: 11,
+    bio: "Driveways, patios, paths, and industrial concrete floors. Decorative concrete, stamped finishes, and reinforced slabs. Reliable, on-time delivery.",
+    certifications: ["Concrete Technology Certificate", "Decorative Concrete Installer"],
+    hourly: { min: 30, max: 48 }, project: { min: 600, max: 15000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Sandra Kovačević", email: `sandra.kovacevic${SEED_DOMAIN}`,
+    trade: "Flooring Specialist", city: "Split", postcode: "21000",
+    lat: 43.508, lng: 16.44, years: 8,
+    bio: "Hardwood, engineered wood, laminate, LVT, and vinyl. Supply and install or fit-only service. Free measurement and quote within 48 hours.",
+    certifications: ["Flooring Installer Certification", "Hardwood Flooring Specialist"],
+    hourly: { min: 28, max: 45 }, project: { min: 500, max: 10000 },
+    available: true, featured: false, verified: true,
+  },
+  {
+    name: "Neven Dragičević", email: `neven.dragicevic${SEED_DOMAIN}`,
+    trade: "Handyman", city: "Varaždin", postcode: "42000",
+    lat: 46.3044, lng: 16.3378, years: 4,
+    bio: "Reliable handyman for all small to medium household tasks. Flat-pack assembly, mounting, minor repairs, painting touch-ups, and general maintenance.",
+    certifications: ["City & Guilds Multi-Trade", "First Fix & Second Fix Carpentry"],
+    hourly: { min: 20, max: 35 }, project: { min: 100, max: 2000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Darko Matić", email: `darko.matic${SEED_DOMAIN}`,
+    trade: "Window & Door Specialist", city: "Karlovac", postcode: "47000",
+    lat: 45.4929, lng: 15.5549, years: 13,
+    bio: "Supply and installation of PVC, aluminium, and timber windows and doors. Conservatories, bi-fold doors, and bespoke glazing. Energy efficiency ratings available.",
+    certifications: ["FENSA Registered Installer", "PVC & Aluminium Systems Certification", "Thermal Performance Specialist"],
+    hourly: { min: 32, max: 50 }, project: { min: 400, max: 20000 },
+    available: true, featured: false, verified: true,
+  },
+  {
+    name: "Elena Babić", email: `elena.babic${SEED_DOMAIN}`,
+    trade: "Electrician", city: "Sisak", postcode: "44000",
+    lat: 45.4658, lng: 16.3798, years: 9,
+    bio: "Domestic and commercial electrician. EV charger installations, consumer unit upgrades, fault finding, and periodic inspection reports. NICEIC registered.",
+    certifications: ["18th Edition Wiring Regulations", "EV Charger Installation Certificate", "PAT Testing Qualification"],
+    hourly: { min: 30, max: 50 }, project: { min: 300, max: 4000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Ante Vukić", email: `ante.vukic${SEED_DOMAIN}`,
+    trade: "Plumber", city: "Šibenik", postcode: "22000",
+    lat: 43.7337, lng: 15.8933, years: 16,
+    bio: "Master plumber with 16 years of experience. Bathroom and kitchen fit-outs, underfloor heating, boiler installation and servicing. 24/7 emergency response.",
+    certifications: ["Master Plumber License", "Gas Safe Engineer", "Legionella Risk Assessment"],
+    hourly: { min: 35, max: 55 }, project: { min: 600, max: 8000 },
+    available: true, featured: true, verified: true,
+  },
+  {
+    name: "Damir Čović", email: `damir.covic${SEED_DOMAIN}`,
+    trade: "General Contractor", city: "Mostar", postcode: "88000",
+    lat: 43.3438, lng: 17.8078, years: 20,
+    bio: "20 years as a general contractor across the Western Balkans. Complete project management from planning permits to handover. Residential, commercial, and hospitality.",
+    certifications: ["Certified General Contractor", "Project Management Professional (PMP)", "OSHA Safety Certified"],
+    hourly: { min: 45, max: 70 }, project: { min: 5000, max: 200000 },
+    available: true, featured: true, verified: false,
+  },
+  {
+    name: "Kristina Lozić", email: `kristina.lozic${SEED_DOMAIN}`,
+    trade: "Carpenter", city: "Pula", postcode: "52100",
+    lat: 44.8666, lng: 13.8496, years: 7,
+    bio: "Bespoke furniture maker and finish carpenter. Custom-built cabinetry, shelving, and interior joinery. Small workshop, personal service, and attention to detail.",
+    certifications: ["City & Guilds Carpentry & Joinery", "Bespoke Furniture Making Certificate"],
+    hourly: { min: 32, max: 52 }, project: { min: 400, max: 8000 },
+    available: true, featured: false, verified: false,
+  },
+  {
+    name: "Zvonimir Pavlović", email: `zvonimir.pavlovic${SEED_DOMAIN}`,
+    trade: "Roofer", city: "Vukovar", postcode: "32000",
+    lat: 45.3518, lng: 18.9997, years: 11,
+    bio: "Roofing contractor covering all pitched and flat roof systems. Re-roofing, new builds, leak investigations, and chimney repairs. Free inspections.",
+    certifications: ["Licensed Roofer", "Flat Roof Systems Installer"],
+    hourly: { min: 30, max: 48 }, project: { min: 1000, max: 20000 },
+    available: false, featured: false, verified: false,
+  },
+  {
+    name: "Marta Tomljanović", email: `marta.tomljanovic${SEED_DOMAIN}`,
+    trade: "Painter", city: "Bjelovar", postcode: "43000",
+    lat: 45.8988, lng: 16.848, years: 5,
+    bio: "Interior painter and decorator with a sharp eye for colour and detail. New builds, repaints, and feature walls. Quick turnaround and fully insured.",
+    certifications: ["Painting & Decorating NVQ Level 3"],
+    hourly: { min: 22, max: 38 }, project: { min: 200, max: 4000 },
+    available: true, featured: false, verified: false,
+  },
+];
+
+const HOMEOWNERS_DATA = [
+  { name: "Nikola Barić",    email: `nikola.baric${SEED_DOMAIN}`,    city: "Zagreb" },
+  { name: "Lucija Filipović", email: `lucija.filipovic${SEED_DOMAIN}`, city: "Split" },
+  { name: "Petar Golubić",   email: `petar.golubic${SEED_DOMAIN}`,   city: "Rijeka" },
+  { name: "Helena Ivanović", email: `helena.ivanovic${SEED_DOMAIN}`, city: "Osijek" },
+  { name: "Dominik Jakšić",  email: `dominik.jaksic${SEED_DOMAIN}`,  city: "Zadar" },
+  { name: "Ivana Kolar",     email: `ivana.kolar${SEED_DOMAIN}`,     city: "Dubrovnik" },
+  { name: "Stjepan Lončar",  email: `stjepan.loncar${SEED_DOMAIN}`,  city: "Zagreb" },
+  { name: "Marina Miletić",  email: `marina.miletic${SEED_DOMAIN}`,  city: "Varaždin" },
+  { name: "Goran Nikolić",   email: `goran.nikolic${SEED_DOMAIN}`,   city: "Karlovac" },
+  { name: "Nikolina Oršić",  email: `nikolina.orsic${SEED_DOMAIN}`,  city: "Sisak" },
+  { name: "Branimir Pejić",  email: `branimir.pejic${SEED_DOMAIN}`,  city: "Split" },
+  { name: "Vesna Rogić",     email: `vesna.rogic${SEED_DOMAIN}`,     city: "Zagreb" },
+  { name: "Domagoj Šarić",   email: `domagoj.saric${SEED_DOMAIN}`,   city: "Pula" },
+  { name: "Mirjana Tomić",   email: `mirjana.tomic${SEED_DOMAIN}`,   city: "Vukovar" },
+  { name: "Krešimir Uglešić", email: `kresimir.uglesic${SEED_DOMAIN}`, city: "Bjelovar" },
+  { name: "Dora Vlahović",   email: `dora.vlahovic${SEED_DOMAIN}`,   city: "Zagreb" },
+  { name: "Miroslav Zorić",  email: `miroslav.zoric${SEED_DOMAIN}`,  city: "Split" },
+  { name: "Tatjana Anić",    email: `tatjana.anic${SEED_DOMAIN}`,    city: "Rijeka" },
+  { name: "Slavko Benić",    email: `slavko.benic${SEED_DOMAIN}`,    city: "Osijek" },
+  { name: "Renata Curić",    email: `renata.curic${SEED_DOMAIN}`,    city: "Zadar" },
+];
+
+// ─── Main ─────────────────────────────────────────────────────────────────────
+
+async function main() {
+  await mongoose.connect(process.env.MONGODB_URI, { bufferCommands: false });
+  console.log("✔ Connected to MongoDB");
+
+  // Clean up existing seed data
+  const existingSeedUsers = await User.find({ email: { $regex: `${SEED_DOMAIN}$` } }).select("_id").lean();
+  const seedUserIds = existingSeedUsers.map((u) => u._id);
+
+  if (seedUserIds.length > 0) {
+    const existingContractors = await Contractor.find({ owner: { $in: seedUserIds } }).select("_id").lean();
+    const seedContractorIds = existingContractors.map((c) => c._id);
+
+    // Import inline to avoid circular deps
+    const Review = models.Review || model("Review", new Schema({ user: Schema.Types.ObjectId, contractor: Schema.Types.ObjectId }, { strict: false }));
+    const Portfolio = models.Portfolio || model("Portfolio", new Schema({ contractor: Schema.Types.ObjectId }, { strict: false }));
+    const Inquiry = models.Inquiry || model("Inquiry", new Schema({ sender: Schema.Types.ObjectId, contractor: Schema.Types.ObjectId }, { strict: false }));
+
+    await Review.deleteMany({ $or: [{ user: { $in: seedUserIds } }, { contractor: { $in: seedContractorIds } }] });
+    await Portfolio.deleteMany({ contractor: { $in: seedContractorIds } });
+    await Inquiry.deleteMany({ $or: [{ sender: { $in: seedUserIds } }, { contractor: { $in: seedContractorIds } }] });
+    await Contractor.deleteMany({ owner: { $in: seedUserIds } });
+    await User.deleteMany({ email: { $regex: `${SEED_DOMAIN}$` } });
+    console.log(`✔ Cleared ${seedUserIds.length} existing seed users and all related data`);
+  }
+
+  const hashedPassword = await bcrypt.hash(SEED_PASSWORD, 12);
+  const now = new Date();
+
+  // ── Homeowners ──
+  const homeownerDocs = HOMEOWNERS_DATA.map((h) => ({
+    name: h.name,
+    email: h.email,
+    image: DEFAULT_IMAGE,
+    password: hashedPassword,
+    role: "homeowner",
+    emailVerified: now,
+    needsOnboarding: false,
+  }));
+
+  const insertedHomeowners = await User.insertMany(homeownerDocs);
+  console.log(`✔ Created ${insertedHomeowners.length} homeowner users`);
+
+  // ── Contractors ──
+  const contractorUserDocs = CONTRACTORS_DATA.map((c) => ({
+    name: c.name,
+    email: c.email,
+    image: DEFAULT_IMAGE,
+    password: hashedPassword,
+    role: "contractor",
+    emailVerified: now,
+    needsOnboarding: false,
+  }));
+
+  const insertedContractorUsers = await User.insertMany(contractorUserDocs);
+  console.log(`✔ Created ${insertedContractorUsers.length} contractor users`);
+
+  // ── Contractor profiles ──
+  const contractorProfileDocs = CONTRACTORS_DATA.map((c, i) => ({
+    owner: insertedContractorUsers[i]._id,
+    name: c.name,
+    slug: toSlug(c.name),
+    profileImage: DEFAULT_IMAGE,
+    trade: c.trade,
+    bio: c.bio,
+    phone: `+385 ${90 + i} ${100 + i * 7} ${1000 + i * 31}`,
+    email: c.email,
+    serviceArea: {
+      lat: c.lat,
+      lng: c.lng,
+      radiusKm: 30,
+      address: `${c.city}, Croatia`,
+      postcode: c.postcode,
+    },
+    certifications: c.certifications,
+    priceRange: {
+      hourly: c.hourly,
+      project: c.project,
+      currency: "EUR",
+    },
+    yearsExperience: c.years,
+    available: c.available,
+    featured: c.featured,
+    verified: c.verified,
+    averageRating: 0,
+    reviewCount: 0,
+    viewCount: Math.floor(Math.random() * 300) + 20,
+  }));
+
+  await Contractor.insertMany(contractorProfileDocs);
+  console.log(`✔ Created ${contractorProfileDocs.length} contractor profiles`);
+
+  console.log(`\n✅ Seed complete. All accounts use password: ${SEED_PASSWORD}`);
+  console.log(`   Seed email domain: ${SEED_DOMAIN}`);
+  await mongoose.disconnect();
+}
+
+main().catch((err) => { console.error(err); process.exit(1); });

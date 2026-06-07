@@ -7,11 +7,9 @@ import FeaturedContractorCard from "@/components/FeaturedContractorCard";
 const FeaturedContractors = async () => {
   await connectDB();
 
-  const contractors = await Contractor.find({
-    featured: true,
-  }).lean();
+  const allFeatured = await Contractor.find({ featured: true }).lean();
+  const contractors = allFeatured.sort(() => 0.5 - Math.random()).slice(0, 3);
 
-  // Get all contractor IDs
   const contractorIds = contractors.map((c) => c._id);
 
   // Fetch portfolios for these contractors

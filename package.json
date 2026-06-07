@@ -1,6 +1,6 @@
 {
   "name": "contracty-app",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -9,6 +9,9 @@
     "lint": "eslint",
     "seed:users": "node scripts/seed-users.mjs",
     "seed:reviews": "node scripts/seed-reviews.mjs",
+    "seed:portfolios": "node scripts/seed-portfolios.mjs",
+    "seed:inquiries": "node scripts/seed-inquiries.mjs",
+    "seed:all": "node scripts/seed-users.mjs && node scripts/seed-reviews.mjs && node scripts/seed-portfolios.mjs && node scripts/seed-inquiries.mjs",
     "email:dev": "email dev"
   },
   "dependencies": {

@@ -7,7 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { updateAvailability, changePassword, deleteAccount } from "@/app/actions/contractor-actions";
+import {
+  updateAvailability,
+  changePassword,
+  deleteAccount,
+} from "@/app/actions/contractor-actions";
 import toast from "react-hot-toast";
 
 function AvailabilitySection({ slug, available }) {
@@ -20,7 +24,9 @@ function AvailabilitySection({ slug, available }) {
     try {
       await updateAvailability(slug, !isAvailable);
       setIsAvailable((prev) => !prev);
-      toast.success(`You are now ${!isAvailable ? "available" : "unavailable"} for new work`);
+      toast.success(
+        `You are now ${!isAvailable ? "available" : "unavailable"} for new work`,
+      );
       router.refresh();
     } catch {
       toast.error("Failed to update availability");
@@ -34,7 +40,9 @@ function AvailabilitySection({ slug, available }) {
       <div>
         <p className="text-sm font-medium">Availability</p>
         <p className="text-xs text-muted-foreground">
-          {isAvailable ? "You appear as available for new projects" : "You are hidden from new inquiries"}
+          {isAvailable
+            ? "You appear as available for new projects"
+            : "You are hidden from new inquiries"}
         </p>
       </div>
       <Button
@@ -118,6 +126,58 @@ function PasswordSection() {
   );
 }
 
+function ExportDataSection({ slug }) {
+  const [loading, setLoading] = useState(false);
+
+  async function handleExport() {
+    setLoading(true);
+
+    try {
+      const res = await fetch(`/api/contractors/${slug}`);
+      if (!res.ok) throw new Error("Failed to fetch profile data");
+
+      const data = await res.json();
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${slug}-profile-data.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+
+      toast.success("Profile data has been exported");
+    } catch (error) {
+      toast.error("Export failed, please try again");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <p className="text-sm font-medium">Export Profile Data</p>
+        <p className="text-xs text-muted-foreground">
+          Download your full profile as a JSON file
+        </p>
+      </div>
+      <button
+        variant="outline"
+        size="sm"
+        onClick={handleExport}
+        disabled={loading}
+        className="px-3 py-1 border rounded text-sm text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:pointer-events-none"
+      >
+        {loading ? "Exporting..." : "Export Data"}
+      </button>
+    </div>
+  );
+}
+
 function DangerZone({ hasPassword }) {
   const [confirming, setConfirming] = useState(false);
   const [password, setPassword] = useState("");
@@ -146,17 +206,24 @@ function DangerZone({ hasPassword }) {
   return (
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">
-        Permanently delete your account, profile, and all portfolio items. This cannot be undone.
+        Permanently delete your account, profile, and all portfolio items. This
+        cannot be undone.
       </p>
       {!confirming ? (
-        <Button variant="destructive" size="sm" onClick={() => setConfirming(true)}>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => setConfirming(true)}
+        >
           Delete Account
         </Button>
       ) : (
         <div className="space-y-3">
           {hasPassword && (
             <div className="space-y-1.5">
-              <Label htmlFor="delete-confirm-password">Enter your password to confirm</Label>
+              <Label htmlFor="delete-confirm-password">
+                Enter your password to confirm
+              </Label>
               <Input
                 id="delete-confirm-password"
                 type="password"
@@ -209,9 +276,20 @@ export default function SettingsClient({ slug, available, hasPassword }) {
         </Card>
       )}
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Data</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ExportDataSection slug={slug} />
+        </CardContent>
+      </Card>
+
       <Card className="border-destructive/40">
         <CardHeader>
-          <CardTitle className="text-base text-destructive">Danger Zone</CardTitle>
+          <CardTitle className="text-base text-destructive">
+            Danger Zone
+          </CardTitle>
         </CardHeader>
         <Separator className="mb-4" />
         <CardContent>

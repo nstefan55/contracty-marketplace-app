@@ -5,7 +5,7 @@ import Link from "next/link";
 import AuthGoogle from "@/components/AuthGoogle";
 import { credentialsSignIn } from "@/app/actions/credentialsSignIn";
 import { useActionState, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { MoonLoaderSpinner } from "@/components/lib/Spinner";
 import { signInSchema } from "@/lib/zod";
@@ -15,8 +15,9 @@ const initialState = {
   errors: {},
 };
 
-const SignInPage = ({ searchParams }) => {
+const SignInPage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const [otpError, setOtpError] = useState("");
@@ -27,7 +28,7 @@ const SignInPage = ({ searchParams }) => {
     initialState,
   );
 
-  const error = searchParams?.error;
+  const error = searchParams.get("error");
 
   const messages = {
     CredentialsSignin: "Invalid email or password.",

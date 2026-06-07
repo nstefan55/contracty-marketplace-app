@@ -25,6 +25,11 @@ const nextConfig = {
         hostname: "api.maptiler.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: "picsum.photos",
+        pathname: "**",
+      },
     ],
   },
   async headers() {
@@ -47,7 +52,7 @@ const nextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              "img-src 'self' data: https://res.cloudinary.com https://lh3.googleusercontent.com https://api.maptiler.com",
+              "img-src 'self' data: https://res.cloudinary.com https://lh3.googleusercontent.com https://api.maptiler.com https://picsum.photos",
               `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://upload-widget.cloudinary.com`,
               "style-src 'self' 'unsafe-inline'",
               "connect-src 'self' https://*.cloudinary.com https://api.maptiler.com https://api.opencagedata.com https://*.upstash.io",

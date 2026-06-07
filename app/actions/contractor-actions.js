@@ -9,6 +9,17 @@ import User from "@/models/User";
 import { verifyPassword, saltAndHashPassword } from "@/lib/password";
 import Inquiry from "@/models/Inquiry";
 import { checkActionRateLimit } from "@/lib/action-ratelimit";
+import cloudinary from "@/config/cloudinary";
+
+const DEFAULT_CLOUDINARY_IMAGE =
+  "https://res.cloudinary.com/devslulj5/image/upload/v1777836733/default-image_yywmnk.png";
+
+function extractCloudinaryPublicId(url) {
+  if (!url || !url.includes("res.cloudinary.com")) return null;
+  if (url === DEFAULT_CLOUDINARY_IMAGE) return null;
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^./]+)?$/);
+  return match ? match[1] : null;
+}
 
 const TRADES = [
   "General Contractor","Electrician","Plumber","HVAC Technician","Handyman",
@@ -285,6 +296,30 @@ export async function deleteAccount(confirmPassword) {
   if (session.user.role === "contractor") {
     const contractor = await Contractor.findOne({ owner: session.user.id });
     if (contractor) {
+      // Collect all Cloudinary public IDs before deleting documents
+      const portfolioItems = await Portfolio.find({ contractor: contractor._id }).lean();
+      const publicIdsToDelete = [];
+
+      for (const item of portfolioItems) {
+        for (const imageUrl of item.images ?? []) {
+          const publicId = extractCloudinaryPublicId(imageUrl);
+          if (publicId) publicIdsToDelete.push(publicId);
+        }
+      }
+
+      // Delete profile image if it's a custom Cloudinary upload
+      const profileImageId = extractCloudinaryPublicId(contractor.profileImage);
+      if (profileImageId) publicIdsToDelete.push(profileImageId);
+
+      // Batch-delete from Cloudinary (max 100 per call)
+      const BATCH = 100;
+      for (let i = 0; i < publicIdsToDelete.length; i += BATCH) {
+        const batch = publicIdsToDelete.slice(i, i + BATCH);
+        await cloudinary.api.delete_resources(batch).catch(() => {
+          // Non-fatal: DB cleanup proceeds even if Cloudinary call fails
+        });
+      }
+
       await Portfolio.deleteMany({ contractor: contractor._id });
       await contractor.deleteOne();
     }

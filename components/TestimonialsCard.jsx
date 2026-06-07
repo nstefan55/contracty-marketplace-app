@@ -6,7 +6,7 @@ import StarRating from "@/components/lib/StarRating";
 
 const TestimonialsCard = async ({ review }) => {
   const { _id, rating, comment, user } = review;
-  const { name, profileImage } = user || {};
+  const { name, image: profileImage } = user || {};
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border bg-white ">

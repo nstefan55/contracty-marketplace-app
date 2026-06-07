@@ -1,16 +1,24 @@
 import connectDB from "@/config/database";
+import Contractor from "@/models/Contractor";
 import Review from "@/models/Review";
 import TestimonialsCard from "./TestimonialsCard";
 
 const Testimonials = async () => {
   await connectDB();
 
-  const reviews = await Review.find({ verified: true })
-    .populate("user", "name profileImage")
+  const featuredIds = await Contractor.distinct("_id", { featured: true });
+
+  const allReviews = await Review.find({
+    verified: true,
+    contractor: { $in: featuredIds },
+  })
+    .populate("user", "name image")
     .lean();
 
-  // Filter out reviews with null user references (orphaned data)
-  const validReviews = reviews.filter((review) => review.user !== null);
+  const validReviews = allReviews
+    .filter((r) => r.user !== null)
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3);
 
   return validReviews.length > 0 ? (
     <section className="bg-white px-4 py-6 pb-16">

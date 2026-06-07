@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import Image from "next/image";
+
 import StarRating from "@/components/lib/StarRating";
 
 import { BadgeCheck, Banknote, MapPin } from "lucide-react";
@@ -28,9 +30,11 @@ const ContractorCard = async ({ contractor, profileImages }) => {
       <div className="h-44 w-full bg-slate-200">
         {profileImages?.length > 0 ? (
           <Link href={`/contractors/${slug}`}>
-            <img
+            <Image
               src={profileImages[0]}
               alt={name}
+              width={400}
+              height={200}
               className="h-full w-full object-cover"
             />
           </Link>
