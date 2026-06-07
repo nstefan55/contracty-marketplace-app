@@ -66,7 +66,7 @@ const ContractorMap = ({ serviceArea }) => {
         maxZoom: 22,
       });
 
-      new maptilersdk.Marker({ color: "#FF000" })
+      new maptilersdk.Marker({ color: "#FF0000" })
         .setLngLat([lng, lat])
         .addTo(map.current);
     }

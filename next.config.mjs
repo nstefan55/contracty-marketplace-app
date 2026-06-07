@@ -57,6 +57,8 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "connect-src 'self' https://*.cloudinary.com https://api.maptiler.com https://api.opencagedata.com https://*.upstash.io",
               "frame-src https://upload-widget.cloudinary.com",
+              "worker-src 'self' blob:",
+              "child-src 'self' blob:",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

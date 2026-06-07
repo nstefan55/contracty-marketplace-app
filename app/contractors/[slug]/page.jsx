@@ -13,6 +13,7 @@ import CertificationsSection from "@/components/profile/CertificationsSection";
 import InquiryFormCard from "@/components/profile/InquiryFormCard";
 import ServiceAreaCard from "@/components/profile/ServiceAreaCard";
 import QuickStatsCard from "@/components/profile/QuickStatsCard";
+import WriteReviewsCard from "@/components/profile/WriteReviewsCard";
 
 import convertToSerializableObject from "@/app/utils/convertToObject";
 
@@ -94,6 +95,11 @@ export default async function ContractorProfilePage({ params }) {
             isLoggedIn={!!session}
           />
           <ServiceAreaCard serviceArea={contractor.serviceArea} />
+          <WriteReviewsCard
+            contractorId={contractor._id}
+            isLoggedIn={!!session}
+            isOwnProfile={isOwnProfile}
+          />
           <QuickStatsCard
             viewCount={contractor.viewCount}
             bookmarkCount={bookmarkCount}

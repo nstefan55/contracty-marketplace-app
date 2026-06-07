@@ -14,6 +14,8 @@ import InquiryFormCard from "@/components/profile/InquiryFormCard";
 import ServiceAreaCard from "@/components/profile/ServiceAreaCard";
 import QuickStatsCard from "@/components/profile/QuickStatsCard";
 
+import WriteReviewsCard from "@/components/profile/WriteReviewsCard";
+
 import convertToSerializableObject from "@/app/utils/convertToObject";
 
 export default async function ContractorProfilePage({ params }) {
@@ -42,10 +44,10 @@ export default async function ContractorProfilePage({ params }) {
 
   const [portfolioDoc, reviewsDoc, bookmarkCountDoc, isBookmarkedDoc] =
     await Promise.all([
-      Portfolio.findOne({ contractor: contractor._id })
+      Portfolio.find({ contractor: contractor._id })
         .sort({ completedAt: -1 })
         .lean(),
-      Review.findOne({ contractor: contractor._id })
+      Review.find({ contractor: contractor._id })
         .populate("user", "name image")
         .sort({ createdAt: -1 })
         .lean(),
@@ -97,6 +99,11 @@ export default async function ContractorProfilePage({ params }) {
             isLoggedIn={!!session}
           />
           <ServiceAreaCard serviceArea={contractor.serviceArea} />
+          <WriteReviewsCard
+            contractorId={contractor._id}
+            isLoggedIn={!!session}
+            isOwnProfile={isOwnProfile}
+          />
           <QuickStatsCard
             viewCount={contractor.viewCount}
             bookmarkCount={bookmarkCount}
