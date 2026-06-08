@@ -98,7 +98,7 @@ export default function EditProfileForm({ contractor, slug }) {
       toast.success("Profile updated");
       router.refresh();
     } catch (err) {
-      toast.error(err.message ?? "Something went wrong");
+      toast.error("Failed to update profile");
     } finally {
       setLoading(false);
     }

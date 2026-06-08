@@ -24,7 +24,8 @@ export default function DeleteAccountCard({ hasPassword, email }) {
   const [emailConfirm, setEmailConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const emailConfirmed = emailConfirm.trim().toLowerCase() === email.toLowerCase();
+  const emailConfirmed =
+    emailConfirm.trim().toLowerCase() === email.toLowerCase();
 
   function handleOpenChange(next) {
     if (loading) return;
@@ -49,7 +50,7 @@ export default function DeleteAccountCard({ hasPassword, email }) {
       await deleteAccount(hasPassword ? password : undefined);
       await signOut({ callbackUrl: "/signin" });
     } catch (err) {
-      toast.error(err.message ?? "Failed to delete account");
+      toast.error("Failed to delete account");
       setLoading(false);
     }
   }
@@ -98,8 +99,8 @@ export default function DeleteAccountCard({ hasPassword, email }) {
             <div className="space-y-1.5">
               <Label htmlFor="delete-confirm-email">
                 Type{" "}
-                <span className="font-semibold text-slate-900">{email}</span>{" "}
-                to confirm
+                <span className="font-semibold text-slate-900">{email}</span> to
+                confirm
               </Label>
               <Input
                 id="delete-confirm-email"

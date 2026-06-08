@@ -7,11 +7,7 @@ import { createInquiry } from "@/app/actions/Inquiry/createInquiry";
 import toast from "react-hot-toast";
 import { ShieldAlert, Send } from "lucide-react";
 
-export default function InquiryFormCard({
-  contractorSlug,
-  contractorName,
-  isLoggedIn,
-}) {
+export default function InquiryFormCard({ contractorSlug, isLoggedIn }) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     projectType: "",
@@ -40,7 +36,7 @@ export default function InquiryFormCard({
         description: "",
       });
     } catch (err) {
-      toast.error(err.message ?? "Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }

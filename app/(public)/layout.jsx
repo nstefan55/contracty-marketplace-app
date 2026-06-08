@@ -1,10 +1,10 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
-export default function PublicLayout({ children, slug }) {
+export default function PublicLayout({ children }) {
   return (
     <>
-      <Navbar slug={slug} />
+      <Navbar />
       {children}
       <Footer />
     </>

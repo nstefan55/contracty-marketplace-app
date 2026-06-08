@@ -16,7 +16,7 @@ export async function addPortfolioItem(slug, formData) {
     images: formData.images,
     projectType: formData.projectType,
     location: formData.location,
-    completedAt: formData.completedAt,
+    completedAt: formData.completedAt || undefined,
   });
 
   await Portfolio.create({

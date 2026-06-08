@@ -28,7 +28,7 @@ export default function ProfileNameForm({ currentName, currentEmail }) {
       toast.success("Profile updated");
       router.refresh();
     } catch (err) {
-      toast.error(err.message ?? "Failed to update");
+      toast.error("Failed to update");
     } finally {
       setLoading(false);
     }

@@ -80,7 +80,7 @@ function PasswordSection() {
       toast.success("Password changed successfully");
       setForm({ current: "", next: "", confirm: "" });
     } catch (err) {
-      toast.error(err.message ?? "Failed to change password");
+      toast.error("Failed to change password");
     } finally {
       setLoading(false);
     }
@@ -206,7 +206,7 @@ function DangerZone({ hasPassword, email }) {
       await deleteAccount(hasPassword ? password : undefined);
       await signOut({ callbackUrl: "/" });
     } catch (err) {
-      toast.error(err.message ?? "Failed to delete account");
+      toast.error("Failed to delete account");
       setLoading(false);
     }
   }
@@ -287,7 +287,12 @@ function DangerZone({ hasPassword, email }) {
   );
 }
 
-export default function SettingsClient({ slug, available, hasPassword, email }) {
+export default function SettingsClient({
+  slug,
+  available,
+  hasPassword,
+  email,
+}) {
   return (
     <div className="space-y-6">
       <Card>

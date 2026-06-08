@@ -2,6 +2,7 @@ import { Schema, model, models } from "mongoose";
 
 const replySchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: "User" },
+  subject: { type: String, required: true },
   body: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
 });

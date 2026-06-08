@@ -52,7 +52,7 @@ function AddProjectDialog({ slug, onSuccess }) {
       });
       onSuccess();
     } catch (err) {
-      toast.error(err.message ?? "Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -189,7 +189,7 @@ export default function PortfolioManager({ items: initialItems, slug }) {
       setItems((prev) => prev.filter((i) => i._id !== id));
       toast.success("Project removed");
     } catch (err) {
-      toast.error(err.message ?? "Failed to delete");
+      toast.error("Failed to delete");
     } finally {
       setDeleting(null);
     }

@@ -29,7 +29,7 @@ export default function WriteReviewsCard({
       toast.success("Review submitted!");
       setSubmitted(true);
     } catch (err) {
-      toast.error(err.message ?? "Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
