@@ -9,7 +9,7 @@ export async function deleteInquiry(inquiryId) {
   const session = await auth();
   if (!session) throw new Error("You must be signed in to update an inquiry");
 
-  await checkActionRateLimit(`mark-inquiry-read-${session.user.id}`);
+  await checkActionRateLimit(`delete-inquiry-${session.user.id}`);
 
   await connectDB();
 
@@ -22,7 +22,7 @@ export async function deleteInquiry(inquiryId) {
 
   await inquiry.deleteOne();
 
-  revalidatePath("/messages");
+  revalidatePath("/messages", "layout");
 
   return inquiry.status;
 }

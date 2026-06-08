@@ -12,7 +12,7 @@ export async function createInquiry(contractorSlug, formData) {
   const session = await auth();
   if (!session) throw new Error("You must be signed in to send an inquiry");
 
-  await checkActionRateLimit(`inquiry-${session.user.id}`);
+  await checkActionRateLimit(`create-inquiry-${session.user.id}`);
 
   const data = inquirySchema.parse({
     projectType: formData.projectType,

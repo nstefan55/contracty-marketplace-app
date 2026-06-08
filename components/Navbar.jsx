@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import Image from "next/image";
-
+import UnreadInquiryCount from "@/components/UnreadInquiryCount";
 import { signOut } from "next-auth/react";
 
 const Navbar = () => {
@@ -109,7 +109,7 @@ const Navbar = () => {
                     />
                   </svg>
                 </button>
-                {/* <UnreadMessageCount /> */}
+                <UnreadInquiryCount />
               </Link>
               {/* <!-- Profile dropdown button --> */}
               <div className="relative ml-3">
@@ -226,8 +226,8 @@ const Navbar = () => {
                     />
                   </svg>
                 </button>
-                {/* <UnreadMessageCount /> */}
               </Link>
+              <UnreadInquiryCount />
               {/* <!-- Profile dropdown button --> */}
               <div className="relative ml-3">
                 <div>
@@ -252,7 +252,6 @@ const Navbar = () => {
                     />
                   </button>
                 </div>
-
                 {/* <!-- Profile dropdown --> */}
                 {isProfileMenuOpen && (
                   <div

@@ -4,6 +4,7 @@ import AuthProvider from "@/components/AuthProvider";
 import { auth } from "@/app/auth";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { InquiryProvider } from "@/app/context/InquiryContext";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const notoSans = Noto_Sans({ subsets: ["latin"], display: "swap" });
@@ -19,21 +20,23 @@ export default async function RootLayout({ children }) {
   const session = await auth();
   return (
     <AuthProvider session={session}>
-      <html
-        lang="en"
-        className={cn(
-          notoSans.className,
-          raleway.className,
-          sourceSans3.className,
-          "font-sans",
-          geist.variable,
-        )}
-      >
-        <body>
-          {children}
-          <Toaster position="top-center" />
-        </body>
-      </html>
+      <InquiryProvider>
+        <html
+          lang="en"
+          className={cn(
+            notoSans.className,
+            raleway.className,
+            sourceSans3.className,
+            "font-sans",
+            geist.variable,
+          )}
+        >
+          <body>
+            {children}
+            <Toaster position="top-center" />
+          </body>
+        </html>
+      </InquiryProvider>
     </AuthProvider>
   );
 }

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
+import { useInquiryContext } from "@/app/context/InquiryContext";
 
 import { signOut } from "next-auth/react";
 
@@ -42,12 +43,14 @@ const navItems = (slug) => [
   },
 ];
 
-export default function DashboardSidebar({ slug, unreadCount = 0 }) {
+export default function DashboardSidebar({ slug }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
   const { data: session } = useSession();
   const profilePicture = session?.user?.image;
+
+  const { unreadCount } = useInquiryContext();
 
   const currentYear = new Date().getFullYear();
 

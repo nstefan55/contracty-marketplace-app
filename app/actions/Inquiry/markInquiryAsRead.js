@@ -24,7 +24,7 @@ export async function markInquiryAsRead(inquiryId) {
   inquiry.status = inquiry.status === "read" ? "new" : "read";
   await inquiry.save();
 
-  revalidatePath("/messages");
+  revalidatePath("/messages", "layout");
 
   return inquiry.status;
 }
