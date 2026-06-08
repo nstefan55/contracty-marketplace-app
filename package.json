@@ -38,6 +38,7 @@
     "react-email": "6.1.4",
     "react-hook-form": "^7.75.0",
     "react-hot-toast": "^2.6.0",
+    "react-share": "^5.3.0",
     "react-spinners": "^0.17.0",
     "resend": "^6.12.3",
     "shadcn": "^4.7.0",

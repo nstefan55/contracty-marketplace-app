@@ -7,10 +7,8 @@ import toast from "react-hot-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import {
-  updateProfileName,
-  updateProfileEmail,
-} from "@/app/actions/user-actions";
+import { updateProfileName } from "@/app/actions/User/updateProfileName";
+import { updateProfileEmail } from "@/app/actions/User/updateProfileEmail";
 
 export default function ProfileNameForm({ currentName, currentEmail }) {
   const router = useRouter();

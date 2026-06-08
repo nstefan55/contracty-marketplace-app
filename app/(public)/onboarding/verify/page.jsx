@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Image from "next/image";
-import { signInWithToken } from "@/app/actions/auth-actions";
+import { signInWithToken } from "@/app/actions/Auth/signInWithToken";
 
 export default function VerifyPage() {
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);

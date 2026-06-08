@@ -16,6 +16,8 @@ import QuickStatsCard from "@/components/profile/QuickStatsCard";
 
 import WriteReviewsCard from "@/components/profile/WriteReviewsCard";
 
+import ShareButtons from "@/components/profile/ShareButtons";
+
 import convertToSerializableObject from "@/app/utils/convertToObject";
 
 export default async function ContractorProfilePage({ params }) {
@@ -98,6 +100,7 @@ export default async function ContractorProfilePage({ params }) {
             contractorName={contractor.name}
             isLoggedIn={!!session}
           />
+          <ShareButtons contractorId={contractor._id} />
           <ServiceAreaCard serviceArea={contractor.serviceArea} />
           <WriteReviewsCard
             contractorId={contractor._id}

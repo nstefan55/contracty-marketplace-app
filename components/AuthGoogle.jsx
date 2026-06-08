@@ -1,4 +1,4 @@
-import { signInWithGoogle } from "@/app/actions/auth-actions";
+import { signInWithGoogle } from "@/app/actions/Auth/signInWithGoogle";
 
 const AuthGoogle = () => {
   return (

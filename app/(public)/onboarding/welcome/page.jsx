@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { setupContractorProfile } from "@/app/actions/contractor-actions";
+import { setupContractorProfile } from "@/app/actions/Contractor/setupContractorProfile";
 
 const content = {
   homeowner: {

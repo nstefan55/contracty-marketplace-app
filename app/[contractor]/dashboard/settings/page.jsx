@@ -13,7 +13,7 @@ export default async function SettingsPage({ params }) {
   await connectDB();
   const [contractor, user] = await Promise.all([
     Contractor.findOne({ slug }).lean(),
-    User.findById(session.user.id).select("password").lean(),
+    User.findById(session.user.id).select("password email").lean(),
   ]);
   if (!contractor) redirect("/");
 
@@ -31,6 +31,7 @@ export default async function SettingsPage({ params }) {
         slug={slug}
         available={contractor.available}
         hasPassword={!!user?.password}
+        email={user?.email ?? ""}
       />
     </div>
   );

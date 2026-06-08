@@ -7,11 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  updateAvailability,
-  changePassword,
-  deleteAccount,
-} from "@/app/actions/contractor-actions";
+import { updateAvailability } from "@/app/actions/Contractor/updateAvailability";
+import { changePassword } from "@/app/actions/User/changePassword";
+import { deleteAccount } from "@/app/actions/User/deleteAccount";
+
 import toast from "react-hot-toast";
 
 function AvailabilitySection({ slug, available }) {
@@ -178,19 +177,28 @@ function ExportDataSection({ slug }) {
   );
 }
 
-function DangerZone({ hasPassword }) {
+function DangerZone({ hasPassword, email }) {
   const [confirming, setConfirming] = useState(false);
   const [password, setPassword] = useState("");
+  const [emailConfirm, setEmailConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const emailConfirmed =
+    !!email && emailConfirm.trim().toLowerCase() === email.toLowerCase();
 
   function handleCancel() {
     setConfirming(false);
     setPassword("");
+    setEmailConfirm("");
   }
 
   async function handleDelete() {
     if (hasPassword && !password) {
       toast.error("Enter your password to confirm deletion");
+      return;
+    }
+    if (!hasPassword && !emailConfirmed) {
+      toast.error("Type your email exactly to confirm deletion");
       return;
     }
     setLoading(true);
@@ -219,7 +227,7 @@ function DangerZone({ hasPassword }) {
         </Button>
       ) : (
         <div className="space-y-3">
-          {hasPassword && (
+          {hasPassword ? (
             <div className="space-y-1.5">
               <Label htmlFor="delete-confirm-password">
                 Enter your password to confirm
@@ -231,6 +239,24 @@ function DangerZone({ hasPassword }) {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your current password"
                 autoComplete="current-password"
+                disabled={loading}
+              />
+            </div>
+          ) : (
+            <div className="space-y-1.5">
+              <Label htmlFor="delete-confirm-email">
+                Type{" "}
+                <span className="font-semibold text-foreground">{email}</span>{" "}
+                to confirm
+              </Label>
+              <Input
+                id="delete-confirm-email"
+                type="email"
+                value={emailConfirm}
+                onChange={(e) => setEmailConfirm(e.target.value)}
+                placeholder={email}
+                autoComplete="off"
+                disabled={loading}
               />
             </div>
           )}
@@ -239,11 +265,19 @@ function DangerZone({ hasPassword }) {
               variant="destructive"
               size="sm"
               onClick={handleDelete}
-              disabled={loading}
+              disabled={
+                loading ||
+                (hasPassword ? password.length === 0 : !emailConfirmed)
+              }
             >
               {loading ? "Deleting…" : "Yes, delete my account"}
             </Button>
-            <Button variant="outline" size="sm" onClick={handleCancel}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleCancel}
+              disabled={loading}
+            >
               Cancel
             </Button>
           </div>
@@ -253,7 +287,7 @@ function DangerZone({ hasPassword }) {
   );
 }
 
-export default function SettingsClient({ slug, available, hasPassword }) {
+export default function SettingsClient({ slug, available, hasPassword, email }) {
   return (
     <div className="space-y-6">
       <Card>
@@ -293,7 +327,7 @@ export default function SettingsClient({ slug, available, hasPassword }) {
         </CardHeader>
         <Separator className="mb-4" />
         <CardContent>
-          <DangerZone hasPassword={hasPassword} />
+          <DangerZone hasPassword={hasPassword} email={email} />
         </CardContent>
       </Card>
     </div>

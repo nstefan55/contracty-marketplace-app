@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import AuthGoogle from "@/components/AuthGoogle";
-import { credentialsSignIn } from "@/app/actions/credentialsSignIn";
+import { credentialsSignIn } from "@/app/actions/Auth/credentialsSignIn";
 import { useActionState, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";

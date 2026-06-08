@@ -2,12 +2,12 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Bookmark, MessageSquare, X } from "lucide-react";
-
 import { auth } from "@/app/auth";
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ProfileNameForm from "@/components/profile/ProfileNameForm";
+import DeleteAccountCard from "@/components/profile/DeleteAccountCard";
 
 export const metadata = { title: "Your Profile" };
 
@@ -18,10 +18,12 @@ export default async function ProfilePage() {
 
   await connectDB();
   const user = await User.findById(session.user.id)
-    .select("name email image bookmarks createdAt")
+    .select("name email image bookmarks createdAt password")
     .lean();
 
   if (!user) redirect("/signin");
+
+  const hasPassword = Boolean(user.password);
 
   const memberSince = new Date(user.createdAt).toLocaleDateString("en-IE", {
     month: "long",
@@ -108,6 +110,7 @@ export default async function ProfilePage() {
             </CardContent>
           </Card>
         </Link>
+        <DeleteAccountCard hasPassword={hasPassword} email={user.email} />
       </div>
     </main>
   );

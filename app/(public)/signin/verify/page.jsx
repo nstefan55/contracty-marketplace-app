@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { signInWithOTP } from "@/app/actions/auth-actions";
+import { signInWithOTP } from "@/app/actions/Auth/signInWithOTP";
 
 export default function SignInVerifyPage() {
   const router = useRouter();

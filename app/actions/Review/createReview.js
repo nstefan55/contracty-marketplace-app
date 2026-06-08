@@ -1,16 +1,11 @@
 "use server";
-import { z } from "zod";
+import { reviewSchema } from "@/lib/zod";
 import { auth } from "@/app/auth";
 import { revalidatePath } from "next/cache";
 import connectDB from "@/config/database";
 import Contractor from "@/models/Contractor";
 import Review from "@/models/Review";
 import { checkActionRateLimit } from "@/lib/action-ratelimit";
-
-const reviewSchema = z.object({
-  rating: z.number().int().min(1).max(5),
-  comment: z.string().max(1000).optional(),
-});
 
 export async function createReview(contractorId, formData) {
   const session = await auth();
@@ -40,7 +35,8 @@ export async function createReview(contractorId, formData) {
       comment: data.comment,
     });
   } catch (err) {
-    if (err.code === 11000) throw new Error("You have already reviewed this contractor");
+    if (err.code === 11000)
+      throw new Error("You have already reviewed this contractor");
     throw err;
   }
 
@@ -52,7 +48,10 @@ export async function createReview(contractorId, formData) {
   if (stats.length > 0) {
     await Contractor.updateOne(
       { _id: contractorId },
-      { averageRating: Math.round(stats[0].avg * 10) / 10, reviewCount: stats[0].count },
+      {
+        averageRating: Math.round(stats[0].avg * 10) / 10,
+        reviewCount: stats[0].count,
+      },
     );
   }
 

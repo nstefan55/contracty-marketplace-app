@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Bookmark } from "lucide-react";
 import toast from "react-hot-toast";
 
-import { toggleBookmark as toggleBookmarkAction } from "@/app/actions/contractor-actions";
+import { toggleBookmark as toggleBookmarkAction } from "@/app/actions/User/toggleBookmark";
 
 export default function BookmarkButton({
   contractorId,

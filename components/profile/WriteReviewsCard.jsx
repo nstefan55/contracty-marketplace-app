@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Star } from "lucide-react";
-import { createReview } from "@/app/actions/review-actions";
+import { createReview } from "@/app/actions/Review/createReview";
 import toast from "react-hot-toast";
 
 export default function WriteReviewsCard({

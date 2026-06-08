@@ -13,10 +13,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  addPortfolioItem,
-  deletePortfolioItem,
-} from "@/app/actions/contractor-actions";
+import { addPortfolioItem } from "@/app/actions/Portfolio/addPortfolioItem";
+import { deletePortfolioItem } from "@/app/actions/Portfolio/deletePortfolioItem";
 import { Plus, Trash2, Image as ImageIcon, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { CldUploadWidget } from "next-cloudinary";

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateContractorProfile } from "@/app/actions/contractor-actions";
+import { updateContractorProfile } from "@/app/actions/Contractor/updateContractorProfile";
 import { X } from "lucide-react";
 import toast from "react-hot-toast";
 

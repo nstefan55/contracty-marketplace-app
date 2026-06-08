@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { createInquiry } from "@/app/actions/contractor-actions";
+import { createInquiry } from "@/app/actions/Inquiry/createInquiry";
 import toast from "react-hot-toast";
 import { ShieldAlert, Send } from "lucide-react";
 

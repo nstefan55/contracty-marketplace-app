@@ -3,21 +3,6 @@
 import { signIn } from "@/app/auth";
 import { AuthError } from "next-auth";
 
-export async function signInWithGoogle() {
-  await signIn("google", { redirectTo: "/" });
-}
-
-export async function signInWithOTP(email) {
-  try {
-    await signIn("credentials", { email, redirect: false });
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { error: "Sign-in failed. Please try again." };
-    }
-    throw error;
-  }
-}
-
 export async function signInWithToken(email, signInToken) {
   try {
     await signIn("credentials", {
