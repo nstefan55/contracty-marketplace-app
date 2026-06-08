@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { markInquiryAsRead } from "@/app/actions/Inquiry/markInquiryAsRead";
+import { deleteInquiry } from "@/app/actions/Inquiry/deleteInquiry";
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +53,18 @@ function InquiryItem({ inq, session, isContractor }) {
     }
   }
 
-  function handleDelete() {}
+  async function handleDelete() {
+    if (pending) return;
+    setPending(true);
+    try {
+      await deleteInquiry(id);
+      toast.success("Inquiry deleted");
+    } catch (err) {
+      toast.error("Failed to delete inquiry");
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <Card className="hover:shadow-sm transition-shadow">
