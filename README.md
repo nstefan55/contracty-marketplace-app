@@ -241,6 +241,9 @@ The JWT callback self-heals stale tokens (role, onboarding state, contractor slu
 
 ## Demo
 
+https://github.com/user-attachments/assets/3304b7ed-cddd-419f-a826-8a6649a37173
+
+
+
 ### App Version : 1.0.1
 
-_Video walkthrough coming soon._
