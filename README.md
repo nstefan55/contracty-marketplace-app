@@ -239,17 +239,6 @@ The JWT callback self-heals stale tokens (role, onboarding state, contractor slu
 
 ---
 
-## Security
-
-- **Strict CSP** with explicit allowlists for Cloudinary, MapTiler, OpenCage, and Upstash.
-- **HSTS** with preload, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`.
-- **Permissions-Policy** disabling camera and microphone, restricting geolocation to self.
-- **Rate limiting** with Upstash sliding windows — 5 attempts / 15 min on auth, 20 / 5 min on server actions.
-- **Server-side validation** with Zod on auth and profile mutations.
-- **Mongoose `serverExternalPackages`** declared so native modules are not bundled into client output.
-
----
-
 ## Demo
 
 ### App Version : 1.0.1
