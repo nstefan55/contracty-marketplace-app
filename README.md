@@ -11,13 +11,12 @@ Contracty is a full-stack Next.js application built around a contractor director
 - [Core Features](#core-features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
+- [Demo](#demo)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Available Scripts](#available-scripts)
 - [Authentication Flows](#authentication-flows)
 - [Data Models](#data-models)
-- [Security](#security)
-- [Demo](#demo)
 
 ---
 
@@ -124,6 +123,12 @@ contracty-app/
 ├── next.config.mjs            # Next.js config + security headers + CSP
 └── jsconfig.json              # `@/*` path alias to project root
 ```
+
+---
+
+## Demo
+
+https://github.com/user-attachments/assets/3304b7ed-cddd-419f-a826-8a6649a37173
 
 ---
 
@@ -238,12 +243,6 @@ The JWT callback self-heals stale tokens (role, onboarding state, contractor slu
 - **Inquiry** — sender, recipient, contractor refs, project type, budget, timeline, site address, description (≤1000 chars), reply thread, status (`new` / `read` / `replied` / `closed`).
 
 ---
-
-## Demo
-
-https://github.com/user-attachments/assets/3304b7ed-cddd-419f-a826-8a6649a37173
-
-
 
 ### App Version : 1.0.1
 
