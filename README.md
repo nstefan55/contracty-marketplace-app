@@ -128,7 +128,11 @@ contracty-app/
 
 ## Demo
 
-https://github.com/user-attachments/assets/3304b7ed-cddd-419f-a826-8a6649a37173
+
+
+https://github.com/user-attachments/assets/938ec781-1cfe-47a8-9432-bdf7c934791d
+
+
 
 ---
 
