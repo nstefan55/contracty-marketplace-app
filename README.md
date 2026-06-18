@@ -11,13 +11,12 @@ Contracty is a full-stack Next.js application built around a contractor director
 - [Core Features](#core-features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
+- [Demo](#demo)
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [Available Scripts](#available-scripts)
 - [Authentication Flows](#authentication-flows)
 - [Data Models](#data-models)
-- [Security](#security)
-- [Demo](#demo)
 
 ---
 
@@ -124,6 +123,16 @@ contracty-app/
 ├── next.config.mjs            # Next.js config + security headers + CSP
 └── jsconfig.json              # `@/*` path alias to project root
 ```
+
+---
+
+## Demo
+
+
+
+https://github.com/user-attachments/assets/938ec781-1cfe-47a8-9432-bdf7c934791d
+
+
 
 ---
 
@@ -239,19 +248,5 @@ The JWT callback self-heals stale tokens (role, onboarding state, contractor slu
 
 ---
 
-## Security
-
-- **Strict CSP** with explicit allowlists for Cloudinary, MapTiler, OpenCage, and Upstash.
-- **HSTS** with preload, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`.
-- **Permissions-Policy** disabling camera and microphone, restricting geolocation to self.
-- **Rate limiting** with Upstash sliding windows — 5 attempts / 15 min on auth, 20 / 5 min on server actions.
-- **Server-side validation** with Zod on auth and profile mutations.
-- **Mongoose `serverExternalPackages`** declared so native modules are not bundled into client output.
-
----
-
-## Demo
-
 ### App Version : 1.0.1
 
-_Video walkthrough coming soon._
