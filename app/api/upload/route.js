@@ -1,6 +1,6 @@
 import cloudinary from "@/config/cloudinary";
 import { auth } from "@/app/auth";
-import checkActionRateLimit from "@/lib/action-ratelimit";
+import {checkActionRateLimit} from "@/lib/action-ratelimit";
 
 export async function POST(request) {
   const session = await auth();
