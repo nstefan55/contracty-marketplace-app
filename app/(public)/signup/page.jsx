@@ -116,9 +116,9 @@ export default function SignUpPage() {
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Min. 8 characters"
+                placeholder="Min. 12 characters"
                 required
-                minLength={8}
+                minLength={12}
                 maxLength={128}
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
