@@ -49,7 +49,7 @@ const roles = [
 
 export default function RoleSelectionPage() {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { update } = useSession();
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -76,6 +76,7 @@ export default function RoleSelectionPage() {
     if (data.requiresOTP) {
       router.push("/onboarding/verify");
     } else {
+      await update();
       router.push(`/onboarding/welcome?role=${selected}`);
     }
   }
