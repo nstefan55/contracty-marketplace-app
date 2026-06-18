@@ -14,6 +14,9 @@ const sourceSans3 = Source_Sans_3({ subsets: ["latin"], display: "swap" });
 export const metadata = {
   title: "Contracty - Find Local Contractors",
   description: "Find verified local contractors for any project.",
+  verification: {
+    "google-site-verification": "Vs9FqEQOzGy8SqDgx9pQd12P4J9qXfD5rh4U4T3_e5E",
+  },
 };
 
 export default async function RootLayout({ children }) {
