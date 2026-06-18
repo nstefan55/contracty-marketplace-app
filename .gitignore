@@ -43,6 +43,9 @@ yarn-error.log*
 .env.development
 .env.production
 
+!.env.test.example
+
+
 # vercel
 .vercel
 
@@ -65,3 +68,5 @@ CONTRACTOR_PROFILE_GUIDE.md
 
 
 .vercel
+
+

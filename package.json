@@ -7,6 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test:unit": "vitest run --config vitest.config.unit.mjs",
+    "test:unit:watch": "vitest --config vitest.config.unit.mjs",
+    "test:unit:coverage": "vitest run --config vitest.config.unit.mjs --coverage",
+    "test:integration": "vitest run --config vitest.config.integration.mjs",
     "seed:users": "node scripts/seed-users.mjs",
     "seed:reviews": "node scripts/seed-reviews.mjs",
     "seed:portfolios": "node scripts/seed-portfolios.mjs",
@@ -52,10 +56,13 @@
   "devDependencies": {
     "@react-email/ui": "6.1.4",
     "@tailwindcss/postcss": "^4.3.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^10.3.0",
     "eslint-config-next": "16.2.6",
+    "mongodb-memory-server": "^10.4.3",
     "tailwindcss": "^4.3.0",
-    "undici": "^6.21.0"
+    "undici": "^6.21.0",
+    "vitest": "^4.1.9"
   }
 }
