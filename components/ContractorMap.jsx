@@ -25,20 +25,15 @@ const ContractorMap = ({ serviceArea }) => {
           
           if ((data.status.code === 200) & (data.results.length > 0)) {
             const place = data.results[0];
-            
-            console.log(place.geometry);
             setLat(place.geometry.lat);
             setLng(place.geometry.lng);
             setLoading(false);
           } else {
-            console.log("Status", data.status.message);
-            console.log("Total Results", data.total_results);
             setLoading(false);
             setGeoCodeError(true);
           }
         })
         .catch((err) => {
-          console.log("Error", err.message);
           setLoading(false);
           setGeoCodeError(true);
           

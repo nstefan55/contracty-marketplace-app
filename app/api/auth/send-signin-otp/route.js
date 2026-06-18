@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import React from "react";
 import { z } from "zod";
 
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { resend } from "@/config/resend";
 import SignInOTP from "@/emails/SignInOTP";
+
+import {revalidatePath} from "next/cache";
+
 
 const verifyEmail = z.object({ email: z.string().email() });
 
@@ -63,6 +65,10 @@ export async function POST(request) {
   });
 
   if (emailError) console.error("[send-signin-otp] Resend error:", emailError);
+
+  revalidatePath("/", "layout");
+
+  await update();
 
   return NextResponse.json({ success: true });
 }

@@ -7,7 +7,11 @@ import { createInquiry } from "@/app/actions/Inquiry/createInquiry";
 import toast from "react-hot-toast";
 import { ShieldAlert, Send } from "lucide-react";
 
-export default function InquiryFormCard({ contractorSlug, isLoggedIn }) {
+export default function InquiryFormCard({
+  contractorSlug,
+  isLoggedIn,
+  isOwnProfile,
+}) {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     projectType: "",
@@ -23,7 +27,9 @@ export default function InquiryFormCard({ contractorSlug, isLoggedIn }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!isLoggedIn) return;
+    if (!isLoggedIn) return toast.error("Please sign in to send an inquiry.");
+    if (isOwnProfile)
+      return toast.error("You cannot send an inquiry to yourself.");
     setLoading(true);
     try {
       await createInquiry(contractorSlug, form);
@@ -97,18 +103,20 @@ export default function InquiryFormCard({ contractorSlug, isLoggedIn }) {
 
         <Button
           type="submit"
-          disabled={loading || !isLoggedIn}
+          disabled={loading || !isLoggedIn || isOwnProfile}
           className="px-4 py-2 rounded-lg bg-orange-500 text-white text-sm font-semibold hover:bg-orange-600 transition-colors"
         >
           <Send className="w-4 h-4 mr-1 inline" />
           Send Inquiry
         </Button>
 
-        {!isLoggedIn && (
+        {(!isLoggedIn || isOwnProfile) && (
           <div className="flex flex-row mx-auto items-center gap-2 mt-4">
             <ShieldAlert className="text-center text-sm text-slate-400" />
             <p className="text-center text-sm text-slate-400">
-              You&apos;ll need to sign in to send
+              {isOwnProfile
+                ? "You can't send an inquiry to yourself"
+                : "You'll need to sign in to send"}
             </p>
           </div>
         )}

@@ -99,6 +99,7 @@ export default async function ContractorProfilePage({ params }) {
             contractorSlug={slug}
             contractorName={contractor.name}
             isLoggedIn={!!session}
+            isOwnProfile={isOwnProfile}
           />
           <ShareButtons contractorId={contractor._id} />
           <ServiceAreaCard serviceArea={contractor.serviceArea} />

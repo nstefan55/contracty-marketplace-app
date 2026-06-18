@@ -31,6 +31,9 @@ export default function WelcomePage() {
     const role = updated?.user?.role ?? session?.user?.role;
     if (role === "contractor") {
       const { slug } = await setupContractorProfile();
+      // Middleware reads the JWT cookie, not the DB — refresh it after setup so
+      // it reflects needsOnboarding: false before the navigation request arrives.
+      await update();
       router.push(`/${slug}/dashboard/edit-profile`);
     } else if (role === "homeowner") {
       router.push("/contractors");
