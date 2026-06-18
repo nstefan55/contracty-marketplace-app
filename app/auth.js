@@ -250,14 +250,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
       }
 
-      // Self-heal contractorSlug for tokens issued before the slug was wired
-      // into the JWT, or where the Contractor record was created after sign-in
-      // without a subsequent session.update(). Runs once per token.
-      if (token.id && token.role === "contractor" && !token.slugLoaded) {
+      // Self-heal contractorSlug for tokens issued before the contractor profile
+      // existed (e.g. during onboarding). Retries on every request until the
+      // slug is found, then locks with slugLoaded to avoid further DB hits.
+      if (token.id && token.role === "contractor" && !token.contractorSlug) {
         await connectDB();
         const c = await Contractor.findOne({ owner: token.id }).lean();
         token.contractorSlug = c?.slug ?? null;
-        token.slugLoaded = true;
+        if (token.contractorSlug) token.slugLoaded = true;
       }
 
       return token;

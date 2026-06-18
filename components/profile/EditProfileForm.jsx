@@ -64,6 +64,11 @@ export default function EditProfileForm({ contractor, slug }) {
   const [form, setForm] = useState({
     name: contractor.name ?? "",
     bio: contractor.bio ?? "",
+    serviceArea: {
+      address: contractor.serviceArea?.address ?? "",
+      postcode: contractor.serviceArea?.postcode ?? "",
+      radiusKm: contractor.serviceArea?.radiusKm ?? 20,
+    },
     phone: contractor.phone ?? "",
     email: contractor.email ?? "",
     trade: contractor.trade ?? "",
@@ -73,6 +78,13 @@ export default function EditProfileForm({ contractor, slug }) {
 
   function set(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  function setServiceArea(field, value) {
+    setForm((prev) => ({
+      ...prev,
+      serviceArea: { ...prev.serviceArea, [field]: value },
+    }));
   }
 
   function addCert() {
@@ -151,6 +163,47 @@ export default function EditProfileForm({ contractor, slug }) {
           <p className="text-xs text-slate-400 mt-1.5">
             {form.bio.length}/500 characters
           </p>
+        </div>
+      </Section>
+
+      {/* Contact */}
+      <Section
+        title="Location of Work"
+        description="Show homeowners your working area."
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <FieldLabel htmlFor="address">Address</FieldLabel>
+            <Input
+              id="address"
+              type="text"
+              value={form.serviceArea.address}
+              onChange={(e) => setServiceArea("address", e.target.value)}
+              placeholder="Zagreb, Croatia"
+            />
+          </div>
+          <div>
+            <FieldLabel htmlFor="postcode">Post Code</FieldLabel>
+            <Input
+              id="postcode"
+              type="text"
+              value={form.serviceArea.postcode}
+              onChange={(e) => setServiceArea("postcode", e.target.value)}
+              placeholder="10090"
+            />
+          </div>
+          <div>
+            <FieldLabel htmlFor="radiusKm">Radius (Optional, Default: 20)</FieldLabel>
+            <Input
+              id="radiusKm"
+              type="number"
+              min={1}
+              max={500}
+              value={form.serviceArea.radiusKm}
+              onChange={(e) => setServiceArea("radiusKm", e.target.value)}
+              placeholder="20"
+            />
+          </div>
         </div>
       </Section>
 

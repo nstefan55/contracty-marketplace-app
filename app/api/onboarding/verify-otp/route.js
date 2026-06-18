@@ -3,11 +3,14 @@ import { cookies, headers } from "next/headers";
 import crypto from "crypto";
 
 import { authRateLimiter } from "@/lib/ratelimit";
+import { Redis } from "@upstash/redis";
 
 import { verifyCredOtpSchema } from "@/lib/zod";
 
 import connectDB from "@/config/database";
 import User from "@/models/User";
+
+const redis = Redis.fromEnv();
 
 export async function POST(request) {
   const { otp } = verifyCredOtpSchema.parse(await request.json());
@@ -71,7 +74,16 @@ export async function POST(request) {
     );
   }
 
-  if (user.otp !== otp) {
+  // Check Redis first; fall back to the OTP stored in MongoDB
+  let expectedOtp = user.otp;
+  try {
+    const cachedOtp = await redis.get(`otp:${email}`);
+    if (cachedOtp) expectedOtp = cachedOtp;
+  } catch (redisErr) {
+    console.error("Redis OTP read failed, using DB");
+  }
+
+  if (expectedOtp !== otp) {
     return NextResponse.json(
       { error: "Incorrect code. Please try again." },
       { status: 400 },
@@ -91,6 +103,12 @@ export async function POST(request) {
       signInTokenExpiry,
     },
   );
+
+  try {
+    await redis.del(`otp:${email}`);
+  } catch (redisErr) {
+    console.error("Redis OTP delete failed:", redisErr);
+  }
 
   cookieStore.delete("pending_email");
 

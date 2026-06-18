@@ -4,6 +4,9 @@ import { cookies } from "next/headers";
 import connectDB from "@/config/database";
 import User from "@/models/User";
 import { resend } from "@/config/resend";
+import { Redis } from "@upstash/redis";
+
+const redis = Redis.fromEnv();
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -20,43 +23,47 @@ export async function POST(request) {
     );
   }
 
-  await connectDB();
+  try {
+    await connectDB();
 
-  const user = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
-  if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
-  if (user.emailVerified) {
-    return NextResponse.json(
-      { error: "Email is already verified" },
-      { status: 400 },
-    );
-  }
+    if (user.emailVerified) {
+      return NextResponse.json(
+        { error: "Email is already verified" },
+        { status: 400 },
+      );
+    }
 
-  // Rate limit: block if last OTP was sent less than 60s ago
-  if (user.otpExpiry && user.otpExpiry > new Date(Date.now() + 9 * 60 * 1000)) {
-    return NextResponse.json(
-      { error: "Please wait before requesting a new code" },
-      { status: 429 },
-    );
-  }
+    // Rate limit: block if last OTP was sent less than 60s ago
+    if (
+      user.otpExpiry &&
+      user.otpExpiry > new Date(Date.now() + 9 * 60 * 1000)
+    ) {
+      return NextResponse.json(
+        { error: "Please wait before requesting a new code" },
+        { status: 429 },
+      );
+    }
 
-  const otp = generateOTP();
-  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
+    const otp = generateOTP();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-  await User.updateOne({ email }, { otp, otpExpiry });
+    await User.updateOne({ email }, { otp, otpExpiry });
 
-  if (process.env.NODE_ENV === "development") {
-    console.log(`[OTP] ${email} → ${otp}`);
-  }
+    if (process.env.NODE_ENV === "development") {
+      console.log(`[OTP] ${email} → ${otp}`);
+    }
 
-  await resend.emails.send({
-    from: "Contracty <onboarding@contracty.com>",
-    to: email,
-    subject: "Your new Contracty verification code",
-    html: `
+    await resend.emails.send({
+      from: "Contracty <onboarding@contracty.com>",
+      to: email,
+      subject: "Your new Contracty verification code",
+      html: `
       <div style="font-family: -apple-system, sans-serif; max-width: 420px; margin: 0 auto; padding: 48px 24px;">
         <h2 style="color: #1e293b; font-size: 22px; margin: 0 0 8px;">New verification code</h2>
         <p style="color: #64748b; font-size: 15px; margin: 0 0 32px;">Here is your new code. It expires in 10 minutes.</p>
@@ -65,7 +72,24 @@ export async function POST(request) {
         </div>
       </div>
     `,
-  });
+    });
 
-  return NextResponse.json({ success: true });
+    try {
+      await redis.set(`otp:${email}`, otp, { ex: 600 });
+    } catch (redisErr) {
+      console.error("Redis OTP write failed:", redisErr);
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "OTP re-sent successfully",
+    });
+
+  } catch (error) {
+    console.error("Error resending otp password");
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }

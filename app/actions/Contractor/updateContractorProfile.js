@@ -19,6 +19,15 @@ export async function updateContractorProfile(slug, formData) {
       ? Number(formData.yearsExperience)
       : undefined,
     certifications: formData.certifications,
+    serviceArea: formData.serviceArea
+      ? {
+          address: formData.serviceArea.address || undefined,
+          postcode: formData.serviceArea.postcode || undefined,
+          radiusKm: formData.serviceArea.radiusKm
+            ? Number(formData.serviceArea.radiusKm)
+            : undefined,
+        }
+      : undefined,
   });
 
   if (data.name !== undefined) contractor.name = data.name;
@@ -30,6 +39,8 @@ export async function updateContractorProfile(slug, formData) {
     contractor.yearsExperience = data.yearsExperience;
   if (data.certifications !== undefined)
     contractor.certifications = data.certifications;
+  if (data.serviceArea !== undefined)
+    contractor.serviceArea = { ...contractor.serviceArea, ...data.serviceArea };
 
   await contractor.save();
   revalidatePath(`/${slug}/dashboard`);

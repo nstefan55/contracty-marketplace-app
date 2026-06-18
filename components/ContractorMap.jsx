@@ -22,11 +22,10 @@ const ContractorMap = ({ serviceArea }) => {
           key: process.env.NEXT_PUBLIC_OPENCAGE_API_KEY,
         })
         .then((data) => {
-          //console.log(JSON.stringify(data));
+          
           if ((data.status.code === 200) & (data.results.length > 0)) {
             const place = data.results[0];
-            // console.log(place.formatted);
-            // console.log(place.annotations.timezone.name);
+            
             console.log(place.geometry);
             setLat(place.geometry.lat);
             setLng(place.geometry.lng);
@@ -42,11 +41,9 @@ const ContractorMap = ({ serviceArea }) => {
           console.log("Error", err.message);
           setLoading(false);
           setGeoCodeError(true);
-          //Other possible response codes
-          // https://opencagedata.com/api#codes
+          
           if (err.status?.code === 402) {
-            console.log("Hit Free Trial Daily Limits!");
-            console.log("Become a customer: https://opencagedata.com/pricing");
+            console.log("Free Trial Reached");
           }
         });
     }

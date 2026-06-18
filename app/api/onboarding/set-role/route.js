@@ -5,10 +5,13 @@ import connectDB from "@/config/database";
 import User from "@/models/User";
 import { resend } from "@/config/resend";
 import { auth } from "@/app/auth";
+import { Redis } from "@upstash/redis";
 
 import { roleSchema } from "@/lib/zod";
 
 import crypto from "crypto";
+
+const redis = Redis.fromEnv();
 
 function generateOTP() {
   return crypto.randomInt(100000, 1000000).toString();
@@ -82,6 +85,12 @@ export async function POST(request) {
       </div>
     `,
   });
+
+  try {
+    await redis.set(`otp:${email}`, otp, { ex: 600 });
+  } catch (redisErr) {
+    console.error("OTP write failed");
+  }
 
   return NextResponse.json({ success: true, requiresOTP: true });
 }

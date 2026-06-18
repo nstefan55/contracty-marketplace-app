@@ -62,6 +62,7 @@ const contractorSchema = new Schema(
   { timestamps: true },
 );
 
+contractorSchema.index({ owner: 1 }, { unique: true });
 contractorSchema.index({ trade: 1, available: 1 });
 
 export default models.Contractor || model("Contractor", contractorSchema);

@@ -55,13 +55,16 @@ const nextConfig = {
               "img-src 'self' data: https://res.cloudinary.com https://lh3.googleusercontent.com https://api.maptiler.com https://picsum.photos",
               `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://upload-widget.cloudinary.com`,
               "style-src 'self' 'unsafe-inline'",
-              "connect-src 'self' https://*.cloudinary.com https://api.maptiler.com https://api.opencagedata.com https://*.upstash.io",
+              `connect-src 'self' https://*.cloudinary.com https://api.maptiler.com https://api.opencagedata.com https://*.upstash.io${
+                isDev ? " ws://127.0.0.1:* ws://localhost:*" : ""
+              }`,
               "frame-src https://upload-widget.cloudinary.com",
               "worker-src 'self' blob:",
               "child-src 'self' blob:",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",
+              "font-src 'self' data:",
             ].join("; "),
           },
         ],

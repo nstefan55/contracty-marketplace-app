@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -22,14 +23,15 @@ export default function WelcomePage() {
   const { data: session, update } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleGetStarted() {
+    setIsLoading(true);
     const updated = await update();
     const role = updated?.user?.role ?? session?.user?.role;
     if (role === "contractor") {
       const { slug } = await setupContractorProfile();
-      await update(); // refresh JWT so contractorSlug is available in session
-      router.push(`/${slug}/dashboard`);
+      router.push(`/${slug}/dashboard/edit-profile`);
     } else if (role === "homeowner") {
       router.push("/contractors");
     } else {
@@ -39,6 +41,28 @@ export default function WelcomePage() {
 
   const role = searchParams.get("role") || session?.user?.role;
   const copy = content[role] ?? content.homeowner;
+
+  if (isLoading) {
+    return (
+      <section className="min-h-screen bg-background-light flex items-center justify-center px-4">
+        <div className="w-full max-w-md bg-white rounded-2xl p-10 flex flex-col items-center gap-6 text-center">
+          <Image
+            src="/images/logo/contracty-logo.png"
+            alt="Contracty"
+            width={72}
+            height={72}
+          />
+          <span className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="flex flex-col gap-1">
+            <p className="text-[16px] font-semibold text-dark-text">
+              Setting up your profile…
+            </p>
+            <p className="text-[13px] text-gray-text">This will only take a moment.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="min-h-screen bg-background-light flex items-center justify-center px-4">

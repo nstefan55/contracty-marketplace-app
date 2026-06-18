@@ -162,7 +162,7 @@ const Navbar = () => {
                         View Public Profile
                       </Link>
                     )}
-                    {session.user.role === "contractor" && (
+                    {session.user.role === "contractor" && contractorSlug && (
                       <Link
                         href={`/${contractorSlug}/dashboard/edit-profile`}
                         className="block px-4 py-2 text-sm text-gray-700"
